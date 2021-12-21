@@ -10,7 +10,7 @@ const {
   createDataToWrite,
   writeDataToCsv
 } = require("./utils/convertor");
-const { create } = require("domain");
+require("dotenv").config();
 
 const app = express();
 
@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send("Hello World");
+  res.send(process.env);
 });
 
 // create /convert endpoint to receive a file upload
@@ -47,11 +47,10 @@ app.post("/convert", cors(), async (req, res) => {
     // get a list of files in the output directory
     const files = fs.readdirSync(`${__dirname}/../output`);
     const fileName = files.find(file => file.includes(csvFile));
-    console.log(fileName);
 
     const outputFile = {
       name: fileName,
-      url: `http://localhost:8000/output/${fileName}`,
+      url: `${process.env.BASE_URL}/output/${fileName}`,
       size: fs.statSync(`${__dirname}/../output/${fileName}`).size,
       type: "application/csv"
     };
