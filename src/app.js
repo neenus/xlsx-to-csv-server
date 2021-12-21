@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Routes
 app.get("/", (req, res) => {
-  res.send(process.env);
+  res.send("Hello Convertor");
 });
 
 // create /convert endpoint to receive a file upload
