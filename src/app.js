@@ -3,7 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-const morgan = require("morgan");
+if (process.env.NODE_ENV !== "production") {
+  const morgan = require("morgan");
+}
 const {
   parseXlsx,
   createCsvFile,
