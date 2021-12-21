@@ -15,7 +15,9 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
-app.use(morgan("dev"));
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
 app.use(fileUpload());
 app.use(express.json());
 
