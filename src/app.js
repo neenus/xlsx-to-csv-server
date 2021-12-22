@@ -3,9 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
-if (process.env.NODE_ENV !== "production") {
-  const morgan = require("morgan");
-}
+const morgan = require("morgan");
+
 const {
   parseXlsx,
   createCsvFile,
@@ -17,9 +16,7 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
-if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan("combined"));
 app.use(fileUpload());
 app.use(express.json());
 
