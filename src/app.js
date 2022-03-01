@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 });
 
 // create /convert endpoint to receive a file upload
-app.post("/convert", async (req, res) => {
+app.post("/convert", cors(), async (req, res) => {
   const { nextInvoiceNumber, date } = req.body;
   if (req.files === null) {
     return res.status(400).json({ msg: "No file uploaded" });
