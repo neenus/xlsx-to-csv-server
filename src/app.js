@@ -16,9 +16,16 @@ require("dotenv").config();
 const app = express();
 
 // Middleware
-app.use(morgan("combined"));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms")
+);
 app.use(fileUpload());
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:3000"
+  })
+);
 
 // Routes
 app.get("/", (req, res) => {
@@ -26,7 +33,7 @@ app.get("/", (req, res) => {
 });
 
 // create /convert endpoint to receive a file upload
-app.post("/convert", cors(), async (req, res) => {
+app.post("/convert", async (req, res) => {
   const { nextInvoiceNumber, date } = req.body;
   if (req.files === null) {
     return res.status(400).json({ msg: "No file uploaded" });
