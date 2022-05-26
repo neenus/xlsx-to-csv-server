@@ -40,6 +40,15 @@ app.post("/convert", cors(), async (req, res) => {
   }
 
   const file = req.files.file;
+  // Check if file is a excel file
+  if (
+    !file.mimetype.includes("spreadsheet") &&
+    !file.mimetype.includes("ms-excel")
+  ) {
+    return res
+      .status(400)
+      .json({ msg: "Wrong file type was uploaded, please upload excel file" });
+  }
 
   await file.mv(`${__dirname}/../input/${file.name}`, err => {
     if (err) {
