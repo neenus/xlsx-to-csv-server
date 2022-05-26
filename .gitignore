@@ -128,3 +128,8 @@ dist
 
 # MacOS systemfiles
 .DS_Store
+
+# Input and output xlsx and csv files
+*.xlsx
+*.xls
+*.csv
