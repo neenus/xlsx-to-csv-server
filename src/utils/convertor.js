@@ -36,8 +36,8 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
   let dataToWrite = [];
   let parsedDate = new Date(date);
   let adjustedDate =
-    parsedDate.getTime() - parsedDate.getTimezoneOffset() * 60000;
-  let dateString = new Date(adjustedDate).toUTCString();
+    parsedDate.getTime() + parsedDate.getTimezoneOffset() * 60000;
+  let dateString = new Date(adjustedDate).toLocaleDateString();
   let practicionerName = worksheet[0].data[0][1];
   for (const sheet of worksheet) {
     sheet.data.forEach((row, index) => {
