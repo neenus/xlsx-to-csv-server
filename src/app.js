@@ -23,7 +23,8 @@ app.use(fileUpload());
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:3000"
+    origin: ["http://localhost:3000", "https://xlsx-to-csv.neenus.com/"],
+    credentials: true,
   })
 );
 
@@ -67,7 +68,7 @@ app.post("/convert", cors(), async (req, res) => {
 
     const outputFile = {
       name: fileName,
-      url: `${process.env.BASE_URL}/output/${fileName}`,
+      url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${fileName}`,
       size: fs.statSync(`${__dirname}/../output/${fileName}`).size,
       type: "application/csv"
     };
