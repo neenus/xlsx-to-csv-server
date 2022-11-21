@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM --platform=linux/amd64 node:slim
 
 # Set node environment to production
 ENV NODE_ENV=production
@@ -10,7 +10,7 @@ COPY package*.json ./
 RUN npm ci omit=development && npm cache clean --force
 RUN npm install pm2 -g
 
-EXPOSE 8000
+EXPOSE 1337
 COPY --chown=node:node ./ ./
 
 USER node
