@@ -2,6 +2,7 @@ const fs = require("fs");
 const xlsx = require("node-xlsx");
 const convertor = require("json-2-csv");
 const path = require("path");
+const servicesList = require("../data/services.json");
 
 // Make sure to modify the xlsx file to have the following columns:
 // add a new column with Yes on each row you'd like to be writing into the new csv file
@@ -32,6 +33,29 @@ const createCsvFile = fileName => {
   return csvFile;
 };
 
+const getServiceBillingRate = (service, level) => {
+  // find service from servicesList and return the billing rate)
+  const serviceObj = servicesList.find(
+    s => {
+      level = level ? level.toLowerCase() : null;
+      if (!level) {
+        if (s.service_name.toLowerCase() === service.toLowerCase()) return s;
+      } else {
+        if (s.service_name.toLowerCase() === service.toLowerCase() && s.education_level.includes(level)) return s;
+      }
+    }
+  );
+  if (serviceObj) return +serviceObj.service_rate.toFixed(2);
+  else {
+    // throw error
+    // throw new Error("Service not found");
+    console.log("Error: Service not found");
+    return null;
+  }
+};
+
+const setServiceName = service => service.toLowerCase() === "tutoring" ? "Math Remediation" : service;
+
 const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
   let dataToWrite = [];
   let parsedDate = new Date(date);
@@ -42,6 +66,9 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
   for (const sheet of worksheet) {
     sheet.data.forEach((row, index) => {
       if (row[0] === "Yes") {
+        const level = row[4];
+        const service = setServiceName(row[5]);
+        const serviceBillingRate = getServiceBillingRate(service, level);
         const data = {
           "*InvoiceNo": +nextInvoiceNumber + 1,
           "*Customer": row[3],
@@ -50,11 +77,11 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
           Terms: "Due on Receipt",
           Location: "",
           Memo: "",
-          "Item(Product/Service)": row[5],
+          "Item(Product/Service)": service,
           ItemDescription: `${row[2]} ${row[5]} with ${practicionerName}; dates of service: ${row[6]} - ${row[9]} sessions`,
           ItemQuantity: row[10],
-          ItemRate: row[12],
-          "*ItemAmount": row[10] * row[12],
+          ItemRate: serviceBillingRate,
+          "*ItemAmount": row[10] * serviceBillingRate,
           ItemTaxAmount: 0
         };
         dataToWrite.push(data);
@@ -80,5 +107,6 @@ module.exports = {
   parseXlsx,
   createCsvFile,
   createDataToWrite,
-  writeDataToCsv
+  writeDataToCsv,
+  getServiceBillingRate
 };
