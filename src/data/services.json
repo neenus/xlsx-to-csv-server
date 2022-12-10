@@ -2,25 +2,41 @@
   {
     "id": 1,
     "service_name": "New student enrolment Fee",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 79.00
   },
   {
     "id": 2,
     "service_name": "ADHD Coaching",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 110.00
   },
   {
     "id": 3,
     "service_name": "Academic Coaching",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 110.00
   },
   {
     "id": 4,
     "service_name": "Parent Coaching",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 125.00
   },
   {
@@ -35,7 +51,7 @@
     "id": 6,
     "service_name": "Academic Strategist",
     "education_level": [
-      "secondary",
+      "high school",
       "postsecondary"
     ],
     "service_rate": 85.00
@@ -45,7 +61,7 @@
     "service_name": "Math Remediation",
     "education_level": [
       "elementary",
-      "secondary"
+      "high school"
     ],
     "service_rate": 75.00
   },
@@ -60,25 +76,41 @@
   {
     "id": 9,
     "service_name": "Math Diagnostic",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 275.00
   },
   {
     "id": 10,
-    "service_name": "Math Diagnostic",
-    "education_level": "undefined",
+    "service_name": "Reading Remediation",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 67.50
   },
   {
     "id": 11,
     "service_name": "Post Secondary Planning",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 385.00
   },
   {
     "id": 12,
     "service_name": "Transition to Postsecondary",
-    "education_level": "undefined",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
     "service_rate": 85.00
   }
 ]
