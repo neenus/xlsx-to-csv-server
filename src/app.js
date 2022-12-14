@@ -29,9 +29,7 @@ app.use(
 );
 
 // Routes
-app.get("/", (req, res) => {
-  res.send("Hello Convertor");
-});
+app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
 
 // create /convert endpoint to receive a file upload
 app.post("/convert", cors(), async (req, res) => {
