@@ -6,6 +6,7 @@ pipeline {
   stages {
     stage('Cloning our Git') {
       steps {
+        sshagent (credentials: ['jenkins-ssh'])
         sh 'echo "Cloning repository..."'
         sh 'git clone git@github.com:neenus/xlsx-to-csv-server.git'
       }
