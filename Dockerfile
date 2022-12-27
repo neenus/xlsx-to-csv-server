@@ -4,7 +4,7 @@ FROM --platform=linux/amd64 node:slim
 ENV NODE_ENV=production
 
 ADD --chown=node:node . /server
-WORKDIR /server
+WORKDIR /
 
 COPY package*.json ./
 RUN npm ci omit=development && npm cache clean --force
