@@ -58,7 +58,11 @@ app.post("/convert", cors(), async (req, res) => {
     const worksheet = parseXlsx(file.name);
     const csvFile = createCsvFile(file.name);
     const dataToWrite = createDataToWrite(worksheet, nextInvoiceNumber, date);
-    writeDataToCsv(csvFile, dataToWrite);
+    if (dataToWrite.length) {
+      writeDataToCsv(csvFile, dataToWrite);
+    } else {
+      return res.status(500).json({ msg: "Server failed to convert data" });
+    }
 
     // get a list of files in the output directory
     const files = fs.readdirSync(`${__dirname}/../output`);
@@ -66,7 +70,7 @@ app.post("/convert", cors(), async (req, res) => {
 
     const outputFile = {
       name: fileName,
-      url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${fileName}`,
+      url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${encodeURIComponent(fileName)}`,
       size: fs.statSync(`${__dirname}/../output/${fileName}`).size,
       type: "application/csv"
     };

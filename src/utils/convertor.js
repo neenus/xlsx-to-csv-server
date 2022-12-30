@@ -4,20 +4,12 @@ const convertor = require("json-2-csv");
 const path = require("path");
 const servicesList = require("../data/services.json");
 
-// Make sure to modify the xlsx file to have the following columns:
-// add a new column with Yes on each row you'd like to be writing into the new csv file
-// client name
-// item name
-// item description
-// billing rate
 
 let worksheet;
 const inputPath = `${__dirname}/../../input`;
 const outputPath = `${__dirname}/../../output`;
 
-const parseXlsx = fileName => {
-  return (worksheet = xlsx.parse(`${inputPath}/${fileName}`));
-};
+const parseXlsx = fileName => worksheet = xlsx.parse(`${inputPath}/${fileName}`);
 
 const createCsvFile = fileName => {
   // change file extension to .csv
@@ -54,16 +46,25 @@ const getServiceBillingRate = (service, level) => {
   }
 };
 
-const setServiceName = service => service.toLowerCase() === "tutoring" ? "Math Remediation" : service;
+const setServiceName = service => {
+  if (service.toLowerCase() === "tutoring") return "Math Remediation";
+  const serviceObj = servicesList.find(s => s.service_name.toLowerCase() === service.toLowerCase() ? service : null);
+  if (serviceObj) return serviceObj.service_name;
+  else {
+    // throw error
+    console.log("Error: Service not found");
+    return null;
+  }
+}
 
 const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
-  let dataToWrite = [];
-  let parsedDate = new Date(date);
-  let adjustedDate =
-    parsedDate.getTime() + parsedDate.getTimezoneOffset() * 60000;
-  let dateString = new Date(adjustedDate).toLocaleDateString();
-  let practicionerName = worksheet[0].data[0][1];
-  for (const sheet of worksheet) {
+  const dataToWrite = [];
+  const parsedDate = new Date(date);
+  const adjustedDate = parsedDate.getTime() + parsedDate.getTimezoneOffset() * 60000;
+  const dateString = new Date(adjustedDate).toLocaleDateString();
+  const practicionerName = worksheet[0].data[0][1];
+
+  worksheet.forEach(sheet => {
     sheet.data.forEach((row, index) => {
       if (row[0] === "Yes") {
         const level = row[4];
@@ -78,7 +79,7 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
           Location: "",
           Memo: "",
           "Item(Product/Service)": service,
-          ItemDescription: `${row[2]} ${row[5]} with ${practicionerName}; dates of service: ${row[6]} - ${row[9]} sessions`,
+          ItemDescription: `${row[2]} ${service} with ${practicionerName}; dates of service: ${row[6]} - ${row[9]} sessions`,
           ItemQuantity: row[10],
           ItemRate: serviceBillingRate,
           "*ItemAmount": row[10] * serviceBillingRate,
@@ -86,14 +87,16 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
         };
         dataToWrite.push(data);
         nextInvoiceNumber++;
-      }
+      };
     });
-  }
-  console.log("Creating data to write done....");
+  });
   return dataToWrite;
 };
 
 const writeDataToCsv = (fileName, data) => {
+  if (!data.length) {
+    return;
+  };
   convertor.json2csv(data, (err, csvContent) => {
     if (err) throw err;
     fs.writeFile(`${outputPath}/${fileName}`, csvContent, err => {
