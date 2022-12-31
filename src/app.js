@@ -34,8 +34,13 @@ app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
 // create /convert endpoint to receive a file upload
 app.post("/convert", cors(), async (req, res) => {
   const { nextInvoiceNumber, date } = req.body;
-  if (req.files === null) {
+
+  if (!req.files) {
     return res.status(400).json({ msg: "No file uploaded" });
+  } else if (!nextInvoiceNumber) {
+    return res.status(400).json({ msg: "Please provide nextInvoiceNumber" });
+  } else if (!date) {
+    return res.status(400).json({ msg: "Please provide date" });
   }
 
   const file = req.files.file;
@@ -51,7 +56,6 @@ app.post("/convert", cors(), async (req, res) => {
 
   await file.mv(`${__dirname}/../input/${file.name}`, err => {
     if (err) {
-      console.error(err);
       return res.status(500).send(err);
     }
 
@@ -92,6 +96,11 @@ app.post("/convert", cors(), async (req, res) => {
 app.get("/output/:fileName", cors(), (req, res) => {
   const fileName = req.params.fileName;
   const file = `${__dirname}/../output/${fileName}`;
+
+  if (!fs.existsSync(file)) {
+    return res.status(404).json({ msg: "File not found" });
+  }
+
   res.download(file);
 });
 
