@@ -13,6 +13,9 @@ const {
 } = require("./utils/convertor");
 require("dotenv").config();
 
+const inputDir = path.join(__dirname, "../storage/input");
+const outputDir = path.join(__dirname, "../storage/output");
+
 const app = express();
 
 // Middleware
@@ -23,7 +26,7 @@ app.use(fileUpload());
 app.use(express.json());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://xlsx-to-csv.neenus.com/"],
+    origin: [process.env.FE_DEV_URL, process.env.FE_PROD_URL],
     credentials: true,
   })
 );
@@ -54,28 +57,28 @@ app.post("/convert", cors(), async (req, res) => {
       .json({ msg: "Wrong file type was uploaded, please upload excel file" });
   }
 
-  await file.mv(`${__dirname}/../input/${file.name}`, err => {
+  await file.mv(`${inputDir}/${file.name}`, err => {
     if (err) {
       return res.status(500).send(err);
     }
 
-    const worksheet = parseXlsx(file.name);
-    const csvFile = createCsvFile(file.name);
+    const worksheet = parseXlsx(file.name, inputDir);
+    const csvFile = createCsvFile(file.name, inputDir, outputDir);
     const dataToWrite = createDataToWrite(worksheet, nextInvoiceNumber, date);
     if (dataToWrite.length) {
-      writeDataToCsv(csvFile, dataToWrite);
+      writeDataToCsv(csvFile, dataToWrite, outputDir);
     } else {
       return res.status(500).json({ msg: "Server failed to convert data" });
     }
 
     // get a list of files in the output directory
-    const files = fs.readdirSync(`${__dirname}/../output`);
+    const files = fs.readdirSync(`${outputDir}`);
     const fileName = files.find(file => file.includes(csvFile));
 
     const outputFile = {
       name: fileName,
       url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${encodeURIComponent(fileName)}`,
-      size: fs.statSync(`${__dirname}/../output/${fileName}`).size,
+      size: fs.statSync(`${outputDir}/${fileName}`).size,
       type: "application/csv"
     };
 
@@ -95,7 +98,7 @@ app.post("/convert", cors(), async (req, res) => {
 
 app.get("/output/:fileName", cors(), (req, res) => {
   const fileName = req.params.fileName;
-  const file = `${__dirname}/../output/${fileName}`;
+  const file = `${outputDir}/${fileName}`;
 
   if (!fs.existsSync(file)) {
     return res.status(404).json({ msg: "File not found" });
