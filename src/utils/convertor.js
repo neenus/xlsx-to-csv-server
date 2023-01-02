@@ -6,19 +6,17 @@ const servicesList = require("../data/services.json");
 
 
 let worksheet;
-const inputPath = `${__dirname}/../../input`;
-const outputPath = `${__dirname}/../../output`;
 
-const parseXlsx = fileName => worksheet = xlsx.parse(`${inputPath}/${fileName}`);
+const parseXlsx = (fileName, inputDir) => worksheet = xlsx.parse(`${inputDir}/${fileName}`);
 
-const createCsvFile = fileName => {
+const createCsvFile = (fileName, inputDir, outputDir) => {
   // change file extension to .csv
   const csvFile = path
-    .basename(`${inputPath}/${fileName}`)
+    .basename(`${inputDir}/${fileName}`)
     .replace(".xlsx", ".csv");
-  fs.copyFile(`${inputPath}/${fileName}`, `${outputPath}/${csvFile}`, err => {
+  fs.copyFile(`${inputDir}/${fileName}`, `${outputDir}/${csvFile}`, async err => {
     if (err) throw err;
-    fs.writeFile(`${outputPath}/${csvFile}`, "", err => {
+    await fs.writeFile(`${outputDir}/${csvFile}`, "", err => {
       if (err) throw err;
     });
   });
@@ -71,7 +69,7 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
         const service = setServiceName(row[5]);
         const serviceBillingRate = getServiceBillingRate(service, level);
         const data = {
-          "*InvoiceNo": +nextInvoiceNumber + 1,
+          "*InvoiceNo": `${+nextInvoiceNumber + 1}`,
           "*Customer": row[3],
           "*InvoiceDate": dateString,
           "*DueDate": dateString,
@@ -80,10 +78,10 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
           Memo: "",
           "Item(Product/Service)": service,
           ItemDescription: `${row[2]} ${service} with ${practicionerName}; dates of service: ${row[6]} - ${row[9]} sessions`,
-          ItemQuantity: row[10],
-          ItemRate: serviceBillingRate,
-          "*ItemAmount": row[10] * serviceBillingRate,
-          ItemTaxAmount: 0
+          ItemQuantity: `${row[10]}`,
+          ItemRate: `${serviceBillingRate}`,
+          "*ItemAmount": `${row[10] * serviceBillingRate}`,
+          ItemTaxAmount: `0`
         };
         dataToWrite.push(data);
         nextInvoiceNumber++;
@@ -93,13 +91,13 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date) => {
   return dataToWrite;
 };
 
-const writeDataToCsv = (fileName, data) => {
+const writeDataToCsv = async (fileName, data, outputDir) => {
   if (!data.length) {
     return;
   };
   convertor.json2csv(data, (err, csvContent) => {
     if (err) throw err;
-    fs.writeFile(`${outputPath}/${fileName}`, csvContent, err => {
+    fs.writeFile(`${outputDir}/${fileName}`, csvContent, err => {
       if (err) throw err;
     });
     console.log("Writing data to CSV file done....");
@@ -111,5 +109,6 @@ module.exports = {
   createCsvFile,
   createDataToWrite,
   writeDataToCsv,
-  getServiceBillingRate
+  getServiceBillingRate,
+  setServiceName
 };
