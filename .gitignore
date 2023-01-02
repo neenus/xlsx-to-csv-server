@@ -130,6 +130,6 @@ dist
 .DS_Store
 
 # Input and output xlsx and csv files
-input/*.xlsx
-input/*.xls
-output/*.csv
+storage/input/*.xlsx
+storage/input/*.xls
+storage/output/*.csv
