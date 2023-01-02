@@ -4,20 +4,7 @@ const app = require("./app");
 
 const filePath = `${__dirname}/test_files/Taylor Proposed March 2022.xlsx`;
 const wrongFilePath = `${__dirname}/test_files/test.txt`;
-const inputDir = `${__dirname}/../input`;
-
-afterAll(() => {
-  // After all tests run do the following:
-  // - Reset input directory to empty except for input.txt
-  // - Reset output directory to empty except for output.txt
-
-  const inputFiles = fs.readdirSync(`${__dirname}/../input`);
-  const outputFiles = fs.readdirSync(`${__dirname}/../output`);
-
-  inputFiles.forEach(file => file !== "input.txt" ? fs.unlinkSync(`${__dirname}/../input/${file}`) : null);
-
-  outputFiles.forEach(file => file !== "output.txt" ? fs.unlinkSync(`${__dirname}/../output/${file}`) : null);
-});
+const inputDir = `${__dirname}/../storage/input`;
 
 describe("GET / - Test api root directory", () => {
   test("It should respond with a 200 and message Hello Convertor", async () => {
