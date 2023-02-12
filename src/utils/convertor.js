@@ -12,8 +12,8 @@ const servicesList = require("../data/services.json");
 // billing rate
 
 let worksheet;
-const inputPath = `${__dirname}/../../input`;
-const outputPath = `${__dirname}/../../output`;
+const inputPath = `${__dirname}/../../storage/input`;
+const outputPath = `${__dirname}/../../storage/output`;
 
 const parseXlsx = fileName => {
   return (worksheet = xlsx.parse(`${inputPath}/${fileName}`));

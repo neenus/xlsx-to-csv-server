@@ -51,7 +51,7 @@ app.post("/convert", cors(), async (req, res) => {
       .json({ msg: "Wrong file type was uploaded, please upload excel file" });
   }
 
-  await file.mv(`${__dirname}/../input/${file.name}`, err => {
+  await file.mv(`${__dirname}/../storage/input/${file.name}`, err => {
     if (err) {
       console.error(err);
       return res.status(500).send(err);
@@ -63,13 +63,13 @@ app.post("/convert", cors(), async (req, res) => {
     writeDataToCsv(csvFile, dataToWrite);
 
     // get a list of files in the output directory
-    const files = fs.readdirSync(`${__dirname}/../output`);
+    const files = fs.readdirSync(`${__dirname}/../storage/output`);
     const fileName = files.find(file => file.includes(csvFile));
 
     const outputFile = {
       name: fileName,
-      url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${fileName}`,
-      size: fs.statSync(`${__dirname}/../output/${fileName}`).size,
+      url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/storage/output/${fileName}`,
+      size: fs.statSync(`${__dirname}/../storage/output/${fileName}`).size,
       type: "application/csv"
     };
 
@@ -89,7 +89,7 @@ app.post("/convert", cors(), async (req, res) => {
 
 app.get("/output/:fileName", cors(), (req, res) => {
   const fileName = req.params.fileName;
-  const file = `${__dirname}/../output/${fileName}`;
+  const file = `${__dirname}/../storage/output/${fileName}`;
   res.download(file);
 });
 
