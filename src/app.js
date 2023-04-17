@@ -35,7 +35,7 @@ app.use(
 app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
 
 // create /convert endpoint to receive a file upload
-app.post("/convert", cors(), async (req, res) => {
+app.post("/convert", async (req, res) => {
   const { nextInvoiceNumber, date } = req.body;
 
   if (!req.files) {
@@ -96,7 +96,7 @@ app.post("/convert", cors(), async (req, res) => {
   });
 });
 
-app.get("/output/:fileName", cors(), (req, res) => {
+app.get("/output/:fileName", (req, res) => {
   const fileName = req.params.fileName;
   const file = `${outputDir}/${fileName}`;
 
