@@ -60,6 +60,7 @@ describe("POST /convert - upload document to convertor", () => {
       .attach("file", filePath)
       .field("nextInvoiceNumber", 1000)
       .field("date", "2023-01-01")
+      .field("type", "final")
       .set("Accept", "application/json");
 
     const inputFiles = fs.readdirSync(inputDir);
@@ -74,6 +75,7 @@ describe("POST /convert - upload document to convertor", () => {
       .attach("file", filePath)
       .field("nextInvoiceNumber", 1000)
       .field("date", "2023-01-01")
+      .field("type", "final")
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(200);
   });

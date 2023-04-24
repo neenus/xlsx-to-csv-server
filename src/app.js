@@ -36,7 +36,7 @@ app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
 
 // create /convert endpoint to receive a file upload
 app.post("/convert", async (req, res) => {
-  const { nextInvoiceNumber, date } = req.body;
+  const { nextInvoiceNumber, date, type } = req.body;
 
   if (!req.files) {
     return res.status(400).json({ msg: "No file uploaded" });
@@ -64,7 +64,7 @@ app.post("/convert", async (req, res) => {
 
     const worksheet = parseXlsx(file.name, inputDir);
     const csvFile = createCsvFile(file.name, inputDir, outputDir);
-    const dataToWrite = createDataToWrite(worksheet, nextInvoiceNumber, date);
+    const dataToWrite = createDataToWrite(worksheet, nextInvoiceNumber, date, type);
     if (dataToWrite.length) {
       writeDataToCsv(csvFile, dataToWrite, outputDir);
     } else {
