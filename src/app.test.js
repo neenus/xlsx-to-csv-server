@@ -2,7 +2,7 @@ const request = require("supertest");
 const fs = require("fs");
 const app = require("./app");
 
-const filePath = `${__dirname}/test_files/Taylor Proposed March 2022.xlsx`;
+const filePath = `${__dirname}/test_files/final_billing_test_sheet.xlsx`;
 const wrongFilePath = `${__dirname}/test_files/test.txt`;
 const inputDir = `${__dirname}/../storage/input`;
 
@@ -64,7 +64,7 @@ describe("POST /convert - upload document to convertor", () => {
       .set("Accept", "application/json");
 
     const inputFiles = fs.readdirSync(inputDir);
-    expect(inputFiles).toContain("Taylor Proposed March 2022.xlsx");
+    expect(inputFiles).toContain("final_billing_test_sheet.xlsx");
   });
 
   test("It should respond with a 200 status code", async () => {

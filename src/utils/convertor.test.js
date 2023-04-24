@@ -4,7 +4,7 @@ const csv = require("csvtojson");
 const convertor = require("./convertor");
 
 const testFilesDir = `${__dirname}/../test_files`;
-const finalTestFileName = `Taylor Proposed March 2022.xlsx`;
+const finalTestFileName = `final_billing_test_sheet.xlsx`;
 const proposedTestFileName = `proposed_billing_test_sheet.xlsx`
 const outputDir = `${__dirname}/../../storage/output`;
 
