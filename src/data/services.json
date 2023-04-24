@@ -112,5 +112,22 @@
       "postsecondary"
     ],
     "service_rate": 85.00
+  },
+  {
+    "id": 13,
+    "service_name": "Math Tutoring",
+    "education_level": [
+      "elementary",
+      "high school"
+    ],
+    "service_rate": 75.00
+  },
+  {
+    "id": 14,
+    "service_name": "Math Tutoring",
+    "education_level": [
+      "postsecondary"
+    ],
+    "service_rate": 85.00
   }
 ]
