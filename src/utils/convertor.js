@@ -57,7 +57,6 @@ const setServiceName = service => {
 }
 
 const getRowData = (row, index) => {
-  console.log({ row, index })
   const contractorName = row[0] ? contractorsList.find(c => c.name.toLowerCase().trim() === row[0].toLowerCase().trim()) : null;
   const studentName = contractorName ? row[1] : null;
   const parentName = contractorName ? row[2] : null;
