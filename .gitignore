@@ -133,3 +133,8 @@ dist
 storage/input/*.xlsx
 storage/input/*.xls
 storage/output/*.csv
+
+# xlsx and csv files in the test directory
+src/test_files/*.xlsx
+src/test_files/*.xls
+src/test_files/*.csv
