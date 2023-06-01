@@ -43,18 +43,18 @@
     "id": 5,
     "service_name": "Academic Strategist",
     "education_level": [
-      "elementary"
+      "high school",
+      "postsecondary"
     ],
-    "service_rate": 75.00
+    "service_rate": 85.00
   },
   {
     "id": 6,
     "service_name": "Academic Strategist",
     "education_level": [
-      "high school",
-      "postsecondary"
+      "elementary"
     ],
-    "service_rate": 85.00
+    "service_rate": 75.00
   },
   {
     "id": 7,
@@ -129,5 +129,15 @@
       "postsecondary"
     ],
     "service_rate": 85.00
+  },
+  {
+    "id": 15,
+    "service_name": "Tutoring",
+    "education_level": [
+      "elementary",
+      "high school",
+      "postsecondary"
+    ],
+    "service_rate": 75.00
   }
 ]
