@@ -4,6 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
+const connectDB = require('./config/db');
 
 const {
   parseXlsx,
@@ -30,6 +31,9 @@ app.use(
     credentials: true,
   })
 );
+
+// Connect to MongoDB
+connectDB();
 
 // Routes
 app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
