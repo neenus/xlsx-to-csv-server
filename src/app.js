@@ -6,6 +6,9 @@ const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const connectDB = require('./config/db');
 
+// import routes
+const contractors = require("./routes/contractors.routes");
+
 const {
   parseXlsx,
   createCsvFile,
@@ -110,5 +113,8 @@ app.get("/output/:fileName", (req, res) => {
 
   res.download(file);
 });
+
+// Mount routers
+app.use("/api/v1/contractors", contractors);
 
 module.exports = app;
