@@ -3,7 +3,7 @@ const xlsx = require("node-xlsx");
 const convertor = require("json-2-csv");
 const path = require("path");
 const servicesList = require("../data/services.json");
-const contractorsList = require("../data/contractors.json");
+const Contractor = require("../models/Contractor.model");
 
 
 let worksheet;
@@ -57,7 +57,10 @@ const setServiceName = service => {
   }
 }
 
-const getRowData = (row, index) => {
+const getRowData = async (row, index) => {
+
+  const contractorsList = await Contractor.find({});
+
   const contractorName = row[0] ? contractorsList.find(c => c.name.toLowerCase().trim() === row[0].toLowerCase().trim()) : null;
   const studentName = contractorName ? row[1] : null;
   const parentName = contractorName ? row[2] : null;
