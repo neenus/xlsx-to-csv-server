@@ -1,5 +1,5 @@
 const Service = require('../models/Service.model');
-const servicesJson = require('../data/services.json');
+// const servicesJson = require('../data/services.json');
 
 // @desc    Get all services
 // @route   GET /api/v1/services
