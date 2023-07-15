@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 
 // import routes
 const contractors = require("./routes/contractors.routes");
+const services = require("./routes/services.routes");
 
 const {
   parseXlsx,
@@ -64,14 +65,14 @@ app.post("/convert", async (req, res) => {
       .json({ msg: "Wrong file type was uploaded, please upload excel file" });
   }
 
-  await file.mv(`${inputDir}/${file.name}`, err => {
+  await file.mv(`${inputDir}/${file.name}`, async err => {
     if (err) {
       return res.status(500).send(err);
     }
 
     const worksheet = parseXlsx(file.name, inputDir);
     const csvFile = createCsvFile(file.name, inputDir, outputDir);
-    const dataToWrite = createDataToWrite(worksheet, nextInvoiceNumber, date, type);
+    const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
     if (dataToWrite.length) {
       writeDataToCsv(csvFile, dataToWrite, outputDir);
     } else {
@@ -116,5 +117,6 @@ app.get("/output/:fileName", (req, res) => {
 
 // Mount routers
 app.use("/api/v1/contractors", contractors);
+app.use("/api/v1/services", services);
 
 module.exports = app;
