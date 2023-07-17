@@ -6,7 +6,9 @@ const connectDB = async () => {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
-  console.log(`MongoDB connected: ${connection.connection.host}`);
+  await console.log(`MongoDB connected: ${connection.connection.host}`);
 };
 
-module.exports = connectDB;
+const closeDB = async () => await mongoose.connection.close();
+
+module.exports = { connectDB, closeDB };

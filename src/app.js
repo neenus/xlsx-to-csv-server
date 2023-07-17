@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 
 // import routes
 const contractors = require("./routes/contractors.routes");
