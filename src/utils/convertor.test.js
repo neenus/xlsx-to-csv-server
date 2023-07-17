@@ -2,14 +2,39 @@ const request = require("supertest");
 const fs = require("fs");
 const csv = require("csvtojson");
 const convertor = require("./convertor");
+const { connectDB } = require("../config/db");
+const { closeDB } = require("../config/db");
+require("dotenv").config({ path: "../.env" });
 
 const testFilesDir = `${__dirname}/../test_files`;
 const finalTestFileName = `final_billing_test_sheet.xlsx`;
 const proposedTestFileName = `proposed_billing_test_sheet.xlsx`
 const outputDir = `${__dirname}/../../storage/output`;
 
+// import models
+const Service = require("../models/Service.model");
+const Contractor = require("../models/Contractor.model");
+
 
 describe("Test convertor module", () => {
+
+  let servicesList;
+  let contractorsList;
+
+  beforeAll(async () => {
+    // connect to db
+    await connectDB();
+
+    // get services list
+    servicesList = await Service.find({});
+    // get contractors list
+    contractorsList = await Contractor.find({});
+  });
+
+  afterAll(async () => {
+    // close db connection
+    await closeDB();
+  });
 
   test("convertor module should be defined", () => expect(convertor).toBeDefined());
 
@@ -43,20 +68,20 @@ describe("Test convertor module", () => {
   test("getServiceBillingRate function should return the service billing rate", () => {
     const service = "Academic Strategist";
     const level = "postsecondary";
-    const result = convertor.getServiceBillingRate(service, level);
+    const result = convertor.getServiceBillingRate(servicesList, service, level);
     expect(result).toEqual(85.00);
   });
 
-  test("setServiceName function should return the service name", () => {
+  test("setServiceName function should return the service name", async () => {
     const service = "Academic Strategist";
-    const result = convertor.setServiceName(service);
+    const result = convertor.setServiceName(servicesList, service);
     expect(result).toEqual("Academic Strategist");
   });
 
-  test("getRowData function should return an object with the correct keys", () => {
+  test("getRowData function should return an object with the correct keys", async () => {
     const row = ['Lisa Marshall', 'Daniel Bhoi', 'Peter Bhoi', "", 'Academic Strategist', "", 2, '2 hours only for April'];
     const index = 1;
-    const result = convertor.getRowData(row, index);
+    const result = convertor.getRowData(contractorsList, servicesList, row, index);
     expect(result).toEqual(expect.any(Object));
     expect(Object.keys(result)).toEqual([
       "contractorName",
@@ -73,9 +98,9 @@ describe("Test convertor module", () => {
   });
 
 
-  test("createDataToWrite should return an array of objects with the correct keys", () => {
-    const finalWorksheet = convertor.parseXlsx(finalTestFileName, testFilesDir);
-    const proposedWorkSheet = convertor.parseXlsx(proposedTestFileName, testFilesDir);
+  test("createDataToWrite should return an array of objects with the correct keys", async () => {
+    const finalWorksheet = await convertor.parseXlsx(finalTestFileName, testFilesDir);
+    const proposedWorkSheet = await convertor.parseXlsx(proposedTestFileName, testFilesDir);
 
     const nextInvoiceNumber = 1000;
     const date = "2023-01-01";
@@ -94,8 +119,8 @@ describe("Test convertor module", () => {
       "*ItemAmount",
       "ItemTaxAmount"
     ]
-    const finalSheetResult = convertor.createDataToWrite(finalWorksheet, nextInvoiceNumber, date, type = "final");
-    const proposedSheetResult = convertor.createDataToWrite(proposedWorkSheet, nextInvoiceNumber, date, type = "proposed");
+    const finalSheetResult = await convertor.createDataToWrite(finalWorksheet, nextInvoiceNumber, date, type = "final");
+    const proposedSheetResult = await convertor.createDataToWrite(proposedWorkSheet, nextInvoiceNumber, date, type = "proposed");
     expect(finalSheetResult).toEqual(expect.any(Array));
     expect(proposedSheetResult).toEqual(expect.any(Array));
 
@@ -105,8 +130,7 @@ describe("Test convertor module", () => {
     } else if (type === "final") {
       const keys = Object.keys(finalSheetResult[0]);
       expect(keys).toEqual(resultObjectKeys);
-    }
-    else {
+    } else {
       expect(finalSheetResult || proposedSheetResult).toEqual(null);
     }
 
@@ -122,15 +146,15 @@ describe("Test convertor module", () => {
   });
 
   test("writeDataToCsv function should write data to a csv file", async () => {
-    jest.setTimeout(5000);
-    const worksheet = convertor.parseXlsx(finalTestFileName, testFilesDir);
-    const csvFile = convertor.createCsvFile(finalTestFileName, testFilesDir, outputDir);
+    // jest.setTimeout(5000);
+    const worksheet = await convertor.parseXlsx(finalTestFileName, testFilesDir);
+    const csvFile = await convertor.createCsvFile(finalTestFileName, testFilesDir, outputDir);
 
     const nextInvoiceNumber = 1000;
     const date = "2023-01-01";
     const type = "final"
-    const data = convertor.createDataToWrite(worksheet, nextInvoiceNumber, date, type);
-    convertor.writeDataToCsv(csvFile, data, outputDir);
+    const data = await convertor.createDataToWrite(worksheet, nextInvoiceNumber, date, type);
+    await convertor.writeDataToCsv(csvFile, data, outputDir);
 
 
     // check if data written to csv file is the same as the data returned from createDataToWrite function
