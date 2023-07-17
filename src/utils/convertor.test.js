@@ -2,8 +2,7 @@ const request = require("supertest");
 const fs = require("fs");
 const csv = require("csvtojson");
 const convertor = require("./convertor");
-const { connectDB } = require("../config/db");
-const { closeDB } = require("../config/db");
+const { connectDB, closeDB } = require("../config/db");
 require("dotenv").config({ path: "../.env" });
 
 const testFilesDir = `${__dirname}/../test_files`;
