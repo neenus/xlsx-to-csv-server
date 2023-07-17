@@ -2,8 +2,8 @@ const fs = require("fs");
 const xlsx = require("node-xlsx");
 const convertor = require("json-2-csv");
 const path = require("path");
-const servicesList = require("../data/services.json");
-const contractorsList = require("../data/contractors.json");
+const Service = require("../models/Service.model");
+const Contractor = require("../models/Contractor.model");
 
 
 let worksheet;
@@ -24,7 +24,7 @@ const createCsvFile = (fileName, inputDir, outputDir) => {
   return csvFile;
 };
 
-const getServiceBillingRate = (service, level) => {
+const getServiceBillingRate = (servicesList, service, level) => {
   // find service from servicesList and return the billing rate)
   const serviceObj = servicesList.find(
     s => {
@@ -45,7 +45,7 @@ const getServiceBillingRate = (service, level) => {
   }
 };
 
-const setServiceName = service => {
+const setServiceName = (servicesList, service) => {
   console.log("Setting service name for....", service)
   // if (service.toLowerCase().trim() === "tutoring") return "Math Remediation";
   const serviceObj = servicesList.find(s => s.service_name.toLowerCase().trim() === service.toLowerCase().trim() ? service : null);
@@ -57,13 +57,14 @@ const setServiceName = service => {
   }
 }
 
-const getRowData = (row, index) => {
+const getRowData = (contractorsList, servicesList, row, index) => {
+
   const contractorName = row[0] ? contractorsList.find(c => c.name.toLowerCase().trim() === row[0].toLowerCase().trim()) : null;
   const studentName = contractorName ? row[1] : null;
   const parentName = contractorName ? row[2] : null;
-  const service = contractorName ? setServiceName(row[4]) : null;
+  const service = contractorName ? setServiceName(servicesList, row[4]) : null;
   const level = contractorName ? row[3] : null;
-  const serviceRate = (contractorName && service) ? getServiceBillingRate(service, level) : null;
+  const serviceRate = (contractorName && service) ? getServiceBillingRate(servicesList, service, level) : null;
   const itemDescription = contractorName ? `${studentName} ${service} with ${contractorName.name}` : null;
   const itemQuantity = contractorName ? row[5] : null;
   const itemAmount = contractorName ? serviceRate * itemQuantity : null;
@@ -84,19 +85,21 @@ const getRowData = (row, index) => {
   else return null;
 }
 
-const createDataToWrite = (worksheet, nextInvoiceNumber, date, type) => {
+const createDataToWrite = async (worksheet, nextInvoiceNumber, date, type) => {
   console.log("Creating data to write to CSV file....");
   const dataToWrite = [];
   const parsedDate = new Date(date);
   const adjustedDate = parsedDate.getTime() + parsedDate.getTimezoneOffset() * 60000;
   const dateString = new Date(adjustedDate).toLocaleDateString();
+  const contractorsList = await Contractor.find({});
+  const servicesList = await Service.find({});
 
   if (type === "proposed") {
     // Proposed billing sheet - begining of the month billing
     console.log("Creating data for proposed billing sheet....");
     worksheet.forEach(sheet => {
       sheet.data.forEach((row, index) => {
-        const rowData = getRowData(row, index);
+        const rowData = getRowData(contractorsList, servicesList, row, index);
         if (!rowData) return;
         const data = {
           "*InvoiceNo": `${+nextInvoiceNumber + 1}`,
@@ -126,8 +129,8 @@ const createDataToWrite = (worksheet, nextInvoiceNumber, date, type) => {
       sheet.data.forEach((row, index) => {
         if (row[0] === "Yes") {
           const level = row[4];
-          const service = setServiceName(row[5]);
-          const serviceBillingRate = getServiceBillingRate(service, level);
+          const service = setServiceName(servicesList, row[5]);
+          const serviceBillingRate = getServiceBillingRate(servicesList, service, level);
           const data = {
             "*InvoiceNo": `${+nextInvoiceNumber + 1}`,
             "*Customer": row[3],
