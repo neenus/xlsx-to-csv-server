@@ -46,7 +46,6 @@ const getServiceBillingRate = (servicesList, service, level) => {
 };
 
 const setServiceName = (servicesList, service) => {
-  console.log("Setting service name for....", service)
   // if (service.toLowerCase().trim() === "tutoring") return "Math Remediation";
   const serviceObj = servicesList.find(s => s.service_name.toLowerCase().trim() === service.toLowerCase().trim() ? service : null);
   if (serviceObj) return serviceObj.service_name;
