@@ -2,7 +2,6 @@ pipeline {
   agent any
   environment {
     DOCKERHUB_CREDENTIALS=credentials('dockerhub-token')
-    MONGODB_URL=credentials('MONGODB_URL')
   }
   stages {
     stage('Cloning our Git') {
@@ -16,7 +15,7 @@ pipeline {
     stage('Build') {
       steps {
         sh 'echo "Building docker image..."'
-        sh 'docker build -t neenus007/xlsx-csv:latest .'
+        sh 'docker build -t neenus007/xlsx-csv:1.0.${BUILD_NUMBER} .'
       }
     }
     stage('Login to DockerHub') {
@@ -28,7 +27,7 @@ pipeline {
     stage('Push to DockerHub') {
       steps {
         sh 'echo "Pushing to DockerHub..."'
-        sh 'docker push neenus007/xlsx-csv:latest'
+        sh 'docker push neenus007/xlsx-csv:1.0.${BUILD_NUMBER}'
       }
     }
   }
