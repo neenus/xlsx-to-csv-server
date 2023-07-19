@@ -16,7 +16,7 @@ pipeline {
     stage('Build docker images') {
       steps {
         sh 'echo "Building docker image..."'
-        sh 'docker build -t neenus007/xlsx-csv:1.0.${BUILD_NUMBER} .'
+        sh 'docker build -t neenus007/xlsx-csv:${IMAGE_VERSION} .'
         sh 'docker build -t neenus007/xlsx-csv:latest .'
       }
     }
