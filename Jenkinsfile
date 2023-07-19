@@ -2,6 +2,7 @@ pipeline {
   agent any
   environment {
     DOCKERHUB_CREDENTIALS=credentials('dockerhub-token')
+    IMAGE_VERSION='1.0.${BUILD_NUMBER}'
   }
   stages {
     stage('Cloning our Git') {
@@ -12,10 +13,11 @@ pipeline {
         }
       }
     }
-    stage('Build') {
+    stage('Build docker images') {
       steps {
         sh 'echo "Building docker image..."'
         sh 'docker build -t neenus007/xlsx-csv:1.0.${BUILD_NUMBER} .'
+        sh 'docker build -t neenus007/xlsx-csv:latest .'
       }
     }
     stage('Login to DockerHub') {
@@ -24,10 +26,11 @@ pipeline {
         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
       }
     }
-    stage('Push to DockerHub') {
+    stage('Push images to DockerHub') {
       steps {
         sh 'echo "Pushing to DockerHub..."'
-        sh 'docker push neenus007/xlsx-csv:1.0.${BUILD_NUMBER}'
+        sh 'docker push neenus007/xlsx-csv:${IMAGE_VERSION}'
+        sh 'docker push neenus007/xlsx-csv:latest'
       }
     }
   }
