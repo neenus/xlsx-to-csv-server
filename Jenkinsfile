@@ -2,7 +2,6 @@ pipeline {
   agent any
   environment {
     DOCKERHUB_CREDENTIALS=credentials('dockerhub-token')
-    MONGODB_URL=credentials('MONGODB_URL')
   }
   stages {
     stage('Cloning our Git') {
