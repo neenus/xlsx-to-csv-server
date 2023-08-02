@@ -102,7 +102,7 @@ const createDataToWrite = async (worksheet, nextInvoiceNumber, date, type) => {
         if (!rowData) return;
         const data = {
           "*InvoiceNo": `${+nextInvoiceNumber + 1}`,
-          "*Customer": rowData.parentName,
+          "*Customer": rowData.studentName,
           "*InvoiceDate": dateString,
           "*DueDate": dateString,
           Terms: "Due on Receipt",
