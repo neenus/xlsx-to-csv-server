@@ -86,3 +86,34 @@ exports.getContractor = async (req, res, next) => {
     });
   }
 }
+
+// @desc    Delete contractor
+// @route   DELETE /api/v1/contractors/:id
+// @access  Public
+
+exports.deleteContractor = async (req, res, next) => {
+
+  try {
+    const contractor = await Contractor.findById(req.params.id);
+
+    if (!contractor) {
+      return res.status(404).json({
+        success: false,
+        error: 'No contractor found'
+      });
+    }
+
+    await contractor.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      data: {}
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server Error'
+    });
+  }
+}
+

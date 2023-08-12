@@ -6,7 +6,8 @@ const router = express.Router();
 const {
   getContractors,
   addContractor,
-  getContractor
+  getContractor,
+  deleteContractor
 } = require('../controllers/contractors.controller');
 
 router.route('/')
@@ -14,6 +15,7 @@ router.route('/')
   .post(addContractor);
 
 router.route('/:id')
-  .get(getContractor);
+  .get(getContractor)
+  .delete(deleteContractor);
 
 module.exports = router;
