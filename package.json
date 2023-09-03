@@ -17,7 +17,7 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "json-2-csv": "^3.14.4",
-    "mongoose": "^7.5.0",
+    "mongoose": "^7.3.3",
     "morgan": "^1.10.0",
     "node-xlsx": "^0.17.2"
   },
