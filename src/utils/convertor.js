@@ -7,6 +7,7 @@ const Contractor = require("../models/Contractor.model");
 
 
 let worksheet;
+let listOfInsuranceInvoices = [];
 
 const parseXlsx = (fileName, inputDir) => worksheet = xlsx.parse(`${inputDir}/${fileName}`);
 
@@ -56,7 +57,19 @@ const setServiceName = (servicesList, service) => {
   }
 }
 
-const getRowData = (contractorsList, servicesList, row, index) => {
+const setServiceDescription = (notes, service, studentName, contractorName, itemQuantity, date) => {
+  console.log("Setting service description....");
+  if (notes && notes.toLowerCase().includes("billed under kate's supervision")) {
+    console.log({ notes, service, studentName, contractorName, itemQuantity, date });
+    // date is in this format Fri Sep 01 2023 00:00:00 GMT-0400 (Eastern Daylight Time)
+    const month = new Date(date).toLocaleString("default", { month: "long" });
+    return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month} - insurance receipt to be issued at the end of the month`;
+  } else {
+    return `${studentName} ${service} with ${contractorName.name}`;
+  }
+}
+
+const getRowData = (contractorsList, servicesList, row, date, index) => {
 
   const contractorName = row[0] ? contractorsList.find(c => c.name.toLowerCase().trim() === row[0].toLowerCase().trim()) : null;
   const studentName = contractorName ? row[1] : null;
@@ -64,9 +77,11 @@ const getRowData = (contractorsList, servicesList, row, index) => {
   const service = contractorName ? setServiceName(servicesList, row[4]) : null;
   const level = contractorName ? row[3] : null;
   const serviceRate = (contractorName && service) ? getServiceBillingRate(servicesList, service, level) : null;
-  const itemDescription = contractorName ? `${studentName} ${service} with ${contractorName.name}` : null;
+  const notes = contractorName ? row[6] : null;
   const itemQuantity = contractorName ? row[5] : null;
+  const itemDescription = contractorName ? setServiceDescription(notes, service, studentName, contractorName, itemQuantity, date) : null;
   const itemAmount = contractorName ? serviceRate * itemQuantity : null;
+  const qbCustomer = contractorName ? row[7] : null;
 
   if (contractorName && contractorName.name)
     return {
@@ -79,6 +94,7 @@ const getRowData = (contractorsList, servicesList, row, index) => {
       itemDescription,
       itemQuantity,
       itemAmount,
+      qbCustomer,
       index
     }
   else return null;
@@ -98,11 +114,11 @@ const createDataToWrite = async (worksheet, nextInvoiceNumber, date, type) => {
     console.log("Creating data for proposed billing sheet....");
     worksheet.forEach(sheet => {
       sheet.data.forEach((row, index) => {
-        const rowData = getRowData(contractorsList, servicesList, row, index);
+        const rowData = getRowData(contractorsList, servicesList, row, date, index);
         if (!rowData) return;
         const data = {
           "*InvoiceNo": `${+nextInvoiceNumber + 1}`,
-          "*Customer": rowData.studentName,
+          "*Customer": rowData.qbCustomer || rowData.studentName || rowData.parentName,
           "*InvoiceDate": dateString,
           "*DueDate": dateString,
           Terms: "Due on Receipt",
@@ -116,6 +132,7 @@ const createDataToWrite = async (worksheet, nextInvoiceNumber, date, type) => {
           ItemTaxAmount: "0"
         }
         dataToWrite.push(data);
+        if (data.ItemDescription.includes("insurance receipt to be issued at the end of the month")) listOfInsuranceInvoices.push(data["*InvoiceNo"]);
         nextInvoiceNumber++;
       });
     });
@@ -167,6 +184,8 @@ const writeDataToCsv = async (fileName, data, outputDir) => {
       if (err) throw err;
     });
     console.log("Writing data to CSV file done....");
+    console.log("List of insurance invoices: ", listOfInsuranceInvoices);
+    listOfInsuranceInvoices = [];
   });
 };
 
