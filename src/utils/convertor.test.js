@@ -78,7 +78,7 @@ describe("Test convertor module", () => {
   });
 
   test("getRowData function should return an object with the correct keys", async () => {
-    const row = ['Lisa Marshall', 'Daniel Bhoi', 'Peter Bhoi', "", 'Academic Strategist', "", 2, '2 hours only for April'];
+    const row = ['Lisa Marshall', 'Daniel Bhoi', 'Peter Bhoi', "", 'Academic Strategist', 2, '2 hours only for April', "Dude Aweseome"];
     const index = 1;
     const result = convertor.getRowData(contractorsList, servicesList, row, index);
     expect(result).toEqual(expect.any(Object));
@@ -92,6 +92,7 @@ describe("Test convertor module", () => {
       "itemDescription",
       "itemQuantity",
       "itemAmount",
+      "qbCustomer",
       "index"
     ]);
   });
@@ -135,7 +136,7 @@ describe("Test convertor module", () => {
 
   });
 
-  test("createDataToWrite function is not returning an empty array", () => {
+  test("createDataToWrite function should not return an empty array", () => {
     const worksheet = convertor.parseXlsx(finalTestFileName, testFilesDir);
 
     const nextInvoiceNumber = 1000;

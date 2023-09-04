@@ -58,10 +58,7 @@ const setServiceName = (servicesList, service) => {
 }
 
 const setServiceDescription = (notes, service, studentName, contractorName, itemQuantity, date) => {
-  console.log("Setting service description....");
   if (notes && notes.toLowerCase().includes("billed under kate's supervision")) {
-    console.log({ notes, service, studentName, contractorName, itemQuantity, date });
-    // date is in this format Fri Sep 01 2023 00:00:00 GMT-0400 (Eastern Daylight Time)
     const month = new Date(date).toLocaleString("default", { month: "long" });
     return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month} - insurance receipt to be issued at the end of the month`;
   } else {
