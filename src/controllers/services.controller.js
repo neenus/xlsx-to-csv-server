@@ -82,6 +82,43 @@ exports.getService = async (req, res, next) => {
   }
 }
 
+// @desc    Update service
+// @route   PUT /api/v1/services/:id
+// @access  Public
+
+exports.updateService = async (req, res, next) => {
+  const serviceId = req.params.id;
+  try {
+    const service = await Service.findById(serviceId);
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        error: 'No service found'
+      });
+    }
+
+    const { service_name, education_level, service_rate } = req.body;
+
+    service_name && (service.service_name = service_name);
+    education_level && (service.education_level = education_level);
+    service_rate && (service.service_rate = service_rate);
+
+    await service.save();
+
+    return res.status(200).json({
+      success: true,
+      data: service
+    });
+  } catch (err) {
+    console.log({ err })
+    return res.status(500).json({
+      success: false,
+      error: 'Server Error'
+    });
+  }
+}
+
 // @desc    Temporary route to seed database
 // @route   POST /api/v1/services/seed
 // exports.seedServices = async (req, res, next) => {
