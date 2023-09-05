@@ -7,6 +7,7 @@ const {
   getContractors,
   addContractor,
   getContractor,
+  deleteContractor,
   // seedContractors
 } = require('../controllers/contractors.controller');
 
