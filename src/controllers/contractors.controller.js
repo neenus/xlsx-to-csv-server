@@ -28,17 +28,17 @@ exports.getContractors = async (req, res, next) => {
 // @access  Public
 
 exports.addContractor = async (req, res, next) => {
-  const { name, address, city, state, zip, phone, email } = req.body;
+  // const { name, address, city, state, zip, phone, email } = req.body;
 
   try {
     const contractor = await Contractor.create({
-      name,
-      address,
-      city,
-      state,
-      zip,
-      phone,
-      email
+      name: req.body.name
+      // address,
+      // city,
+      // state,
+      // zip,
+      // phone,
+      // email
     });
 
     return res.status(201).json({
@@ -117,3 +117,37 @@ exports.deleteContractor = async (req, res, next) => {
   }
 }
 
+
+
+// @desc    Temporary route to seed database
+// @route   POST /api/v1/contractors/seed
+// @access  Public
+
+// exports.seedContractors = async (req, res, next) => {
+//   // drop existing contractors collection
+//   try {
+//     await Contractor.collection.drop();
+//   } catch (err) {
+//     console.log({ err })
+//   }
+
+//   // seed database with contractors.json data using contractor name only
+// try {
+//   const contractors = await Contractor.create(contractorsJSON.map(contractor => {
+//     console.log(contractor.name);
+//     return { name: contractor.name }
+//   }));
+
+//   return res.status(201).json({
+//     success: true,
+//     count: contractors.length,
+//     data: contractors
+//   });
+// } catch (err) {
+//   console.log({ err })
+//   return res.status(500).json({
+//     success: false,
+//     error: 'Server Error'
+//   })
+// }
+// }
