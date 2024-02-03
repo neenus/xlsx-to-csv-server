@@ -8,6 +8,7 @@ const {
   addContractor,
   getContractor,
   deleteContractor,
+  editContractor,
   // seedContractors
 } = require('../controllers/contractors.controller');
 
@@ -17,6 +18,7 @@ router.route('/')
 
 router.route('/:id')
   .get(getContractor)
+  .patch(editContractor)
   .delete(deleteContractor);
 
 // router.route('/seed')

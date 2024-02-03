@@ -28,17 +28,17 @@ exports.getContractors = async (req, res, next) => {
 // @access  Public
 
 exports.addContractor = async (req, res, next) => {
-  // const { name, address, city, state, zip, phone, email } = req.body;
+  const { name, address, city, state, zip, phone, email } = req.body;
 
   try {
     const contractor = await Contractor.create({
-      name: req.body.name
-      // address,
-      // city,
-      // state,
-      // zip,
-      // phone,
-      // email
+      name,
+      address,
+      city,
+      state,
+      zip,
+      phone,
+      email
     });
 
     return res.status(201).json({
@@ -115,6 +115,42 @@ exports.deleteContractor = async (req, res, next) => {
       error: 'Server Error'
     });
   }
+}
+
+exports.editContractor = async (req, res, next) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(404).json({
+      success: false,
+      error: 'No contractor found'
+    });
+  }
+
+  let contractor;
+
+  try {
+    contractor = await Contractor.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: err
+    });
+  }
+
+  if (!contractor) {
+    return res.status(404).json({
+      success: false,
+      error: 'No contractor found'
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: contractor
+  });
 }
 
 
