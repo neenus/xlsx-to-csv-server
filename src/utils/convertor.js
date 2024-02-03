@@ -57,12 +57,12 @@ const setServiceName = (servicesList, service) => {
   }
 }
 
-const setServiceDescription = (notes, service, studentName, contractorName, itemQuantity, date) => {
+const setServiceDescription = (notes, service, contractorName, itemQuantity, date) => {
+  const month = new Date(date).toLocaleString("default", { month: "long" });
   if (notes && notes.toLowerCase().includes("billed under kate's supervision")) {
-    const month = new Date(date).toLocaleString("default", { month: "long" });
     return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month} - insurance receipt to be issued at the end of the month`;
   } else {
-    return `${studentName} ${service} with ${contractorName.name}`;
+    return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month}`;
   }
 }
 
@@ -76,7 +76,7 @@ const getRowData = (contractorsList, servicesList, row, date, index) => {
   const serviceRate = (contractorName && service) ? getServiceBillingRate(servicesList, service, level) : null;
   const notes = contractorName ? row[6] : null;
   const itemQuantity = contractorName ? row[5] : null;
-  const itemDescription = contractorName ? setServiceDescription(notes, service, studentName, contractorName, itemQuantity, date) : null;
+  const itemDescription = contractorName ? setServiceDescription(notes, service, contractorName, itemQuantity, date) : null;
   const itemAmount = contractorName ? serviceRate * itemQuantity : null;
   const qbCustomer = contractorName ? row[7] : null;
 
