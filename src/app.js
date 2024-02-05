@@ -42,6 +42,15 @@ connectDB();
 // Routes
 app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
 
+app.get("/api/v1/version", (req, res, next) => {
+  const packageJson = fs.readFileSync(
+    path.join(__dirname, "../package.json"),
+    "utf8"
+  );
+  const version = JSON.parse(packageJson).version;
+  res.json({ version });
+})
+
 // create /convert endpoint to receive a file upload
 app.post("/convert", async (req, res) => {
   const { nextInvoiceNumber, date, type } = req.body;
@@ -86,7 +95,7 @@ app.post("/convert", async (req, res) => {
     const outputFile = {
       name: fileName,
       url: `${process.env.NODE_ENV === "development" ? process.env.BASE_URL : process.env.BASE_URL_PROD}/output/${encodeURIComponent(fileName)}`,
-      size: fs.statSync(`${outputDir}/${fileName}`).size,
+      size: fs.existsSync(`${outputDir}/${fileName}`) ? fs.statSync(`${outputDir}/${fileName}`).size : 0,
       type: "application/csv"
     };
 

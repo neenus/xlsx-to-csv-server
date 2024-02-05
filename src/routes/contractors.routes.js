@@ -7,7 +7,9 @@ const {
   getContractors,
   addContractor,
   getContractor,
-  deleteContractor
+  deleteContractor,
+  editContractor,
+  // seedContractors
 } = require('../controllers/contractors.controller');
 
 router.route('/')
@@ -16,6 +18,10 @@ router.route('/')
 
 router.route('/:id')
   .get(getContractor)
+  .patch(editContractor)
   .delete(deleteContractor);
+
+// router.route('/seed')
+//   .post(seedContractors);
 
 module.exports = router;

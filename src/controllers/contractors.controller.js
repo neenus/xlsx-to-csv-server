@@ -117,3 +117,73 @@ exports.deleteContractor = async (req, res, next) => {
   }
 }
 
+exports.editContractor = async (req, res, next) => {
+  const id = req.params.id;
+  if (!id) {
+    return res.status(404).json({
+      success: false,
+      error: 'No contractor found'
+    });
+  }
+
+  let contractor;
+
+  try {
+    contractor = await Contractor.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: err
+    });
+  }
+
+  if (!contractor) {
+    return res.status(404).json({
+      success: false,
+      error: 'No contractor found'
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: contractor
+  });
+}
+
+
+
+// @desc    Temporary route to seed database
+// @route   POST /api/v1/contractors/seed
+// @access  Public
+
+// exports.seedContractors = async (req, res, next) => {
+//   // drop existing contractors collection
+//   try {
+//     await Contractor.collection.drop();
+//   } catch (err) {
+//     console.log({ err })
+//   }
+
+//   // seed database with contractors.json data using contractor name only
+// try {
+//   const contractors = await Contractor.create(contractorsJSON.map(contractor => {
+//     console.log(contractor.name);
+//     return { name: contractor.name }
+//   }));
+
+//   return res.status(201).json({
+//     success: true,
+//     count: contractors.length,
+//     data: contractors
+//   });
+// } catch (err) {
+//   console.log({ err })
+//   return res.status(500).json({
+//     success: false,
+//     error: 'Server Error'
+//   })
+// }
+// }
