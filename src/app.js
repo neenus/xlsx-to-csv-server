@@ -5,10 +5,12 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const { connectDB } = require('./config/db');
+const cookieParser = require("cookie-parser");
 
 // import routes
 const contractors = require("./routes/contractors.routes");
 const services = require("./routes/services.routes");
+const auth = require("./routes/auth.routes");
 
 const {
   parseXlsx,
@@ -35,6 +37,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 
 // Connect to MongoDB
 connectDB();
@@ -127,5 +130,6 @@ app.get("/output/:fileName", (req, res) => {
 // Mount routers
 app.use("/api/v1/contractors", contractors);
 app.use("/api/v1/services", services);
+app.use("/api/v1/auth", auth);
 
 module.exports = app;
