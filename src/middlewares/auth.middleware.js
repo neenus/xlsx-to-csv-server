@@ -3,7 +3,7 @@ const axios = require('axios');
 
 
 const requireAuth = async (req, res, next) => {
-  const AUTH_SERVICE_URL = process.env.NODE_ENV === 'production' ? process.env.AUTH_SERVICE_URL_PROD : process.env.AUTH_SERVICE_URL;
+  const authServiceUrl = process.env.NODE_ENV === 'production' ? process.env.AUTH_SERVICE_URL : process.env.AUTH_SERVICE_URL_DEV;
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     // Set token from Bearer token in header
@@ -27,7 +27,7 @@ const requireAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Proxy request to auth server to validate token and get user data
-    const response = await axios.get(`${AUTH_SERVICE_URL}/validate`,
+    const response = await axios.get(`${authServiceUrl}/validate`,
       {
         withCredentials: true,
         headers: {
