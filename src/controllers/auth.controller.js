@@ -5,10 +5,11 @@ const axios = require('axios');
 // @access  Public
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
+  const authServiceUrl = process.env.NODE_ENV === 'production' ? process.env.AUTH_SERVICE_URL : process.env.AUTH_SERVICE_URL_DEV;
 
   try {
     // Proxy authentication request to auth service from Doc-Hub Server
-    const response = await axios.post(`${process.env.AUTH_SERVICE_URL}/login`, {
+    const response = await axios.post(`${authServiceUrl}/login`, {
       email,
       password
     });
