@@ -2,6 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
+const { requireAuth } = require('../middlewares/auth.middleware');
 
 const {
   getContractors,
@@ -13,13 +14,13 @@ const {
 } = require('../controllers/contractors.controller');
 
 router.route('/')
-  .get(getContractors)
-  .post(addContractor);
+  .get(requireAuth, getContractors)
+  .post(requireAuth, addContractor);
 
 router.route('/:id')
-  .get(getContractor)
-  .patch(editContractor)
-  .delete(deleteContractor);
+  .get(requireAuth, getContractor)
+  .patch(requireAuth, editContractor)
+  .delete(requireAuth, deleteContractor);
 
 // router.route('/seed')
 //   .post(seedContractors);
