@@ -17,7 +17,6 @@ const {
   createDataToWrite,
   writeDataToCsv
 } = require("./utils/convertor");
-require("dotenv").config();
 
 const inputDir = path.join(__dirname, "../storage/input");
 const outputDir = path.join(__dirname, "../storage/output");
