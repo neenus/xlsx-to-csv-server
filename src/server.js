@@ -2,10 +2,19 @@ const http = require("http");
 const app = require("./app");
 const PORT = process.env.PORT || 1337;
 const { connectDB, closeDB } = require("./config/db");
-
-const server = http.createServer(app);
+const getConfig = require("./config/getConfig");
+const { jsonToEnv } = require("json-to-env-converter");
 
 const startServer = async () => {
+  // Get config from secrets API and set environment variables
+  const config = await getConfig();
+  jsonToEnv(config);
+
+  // Connect to MongoDB
+  await connectDB();
+
+  // Create server
+  const server = http.createServer(app);
   await server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
@@ -37,16 +46,16 @@ const startServer = async () => {
       process.exit(0); // Exit the process gracefully
     });
   });
-};
 
-// close server on unhandledRejection
-process.on("unhandledRejection", err => {
-  console.log("Unhandled rejection, closing DB and shutting down...");
-  console.log(err.name, err.message);
-  server.close(() => {
-    closeDB();
-    process.exit(1);
+  // close server on unhandledRejection
+  process.on("unhandledRejection", err => {
+    console.log("Unhandled rejection, closing DB and shutting down...");
+    console.log(err.name, err.message);
+    server.close(() => {
+      closeDB();
+      process.exit(1);
+    });
   });
-});
+};
 
 startServer();

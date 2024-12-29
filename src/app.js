@@ -4,7 +4,6 @@ const path = require("path");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
-const { connectDB } = require('./config/db');
 const cookieParser = require("cookie-parser");
 
 // import routes
@@ -38,9 +37,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-
-// Connect to MongoDB
-connectDB();
 
 // Routes
 app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
