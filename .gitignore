@@ -138,3 +138,6 @@ storage/output/*.csv
 src/test_files/*.xlsx
 src/test_files/*.xls
 src/test_files/*.csv
+
+# Secrets file
+secrets.json
