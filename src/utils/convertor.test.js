@@ -3,7 +3,6 @@ const fs = require("fs");
 const csv = require("csvtojson");
 const convertor = require("./convertor");
 const { connectDB, closeDB } = require("../config/db");
-require("dotenv").config({ path: "../.env" });
 
 const testFilesDir = `${__dirname}/../test_files`;
 const finalTestFileName = `final_billing_test_sheet.xlsx`;
