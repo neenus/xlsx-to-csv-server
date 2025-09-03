@@ -2,19 +2,14 @@ const http = require("http");
 const app = require("./app");
 const PORT = process.env.PORT || 1337;
 const { connectDB, closeDB } = require("./config/db");
-const getConfig = require("./config/getConfig");
-const { jsonToEnv } = require("json-to-env-converter");
+
+// Create server
+const server = http.createServer(app);
 
 const startServer = async () => {
-  // Get config from secrets API and set environment variables
-  const config = await getConfig();
-  jsonToEnv(config);
-
   // Connect to MongoDB
   await connectDB();
 
-  // Create server
-  const server = http.createServer(app);
   await server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
