@@ -59,7 +59,7 @@ const setServiceName = (servicesList, service) => {
 
 const setServiceDescription = (notes, service, contractorName, itemQuantity, date) => {
   const month = new Date(date).toLocaleString("default", { month: "long" });
-  if (notes && notes.toLowerCase().includes("insurance receipt") {
+  if (notes && notes.toLowerCase().includes("insurance receipt")) {
     return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month} - insurance receipt to be issued at the end of the month`;
   } else {
     return `${itemQuantity} hours of ${service} with ${contractorName.name} for the month of ${month}`;
