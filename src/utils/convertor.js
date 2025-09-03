@@ -78,7 +78,7 @@ const getRowData = (contractorsList, servicesList, row, date, index) => {
   const itemQuantity = contractorName ? row[5] : null;
   const itemDescription = contractorName ? setServiceDescription(notes, service, contractorName, itemQuantity, date) : null;
   const itemAmount = contractorName ? serviceRate * itemQuantity : null;
-  const qbCustomer = contractorName ? row[7] : null;
+  const qbCustomer = contractorName ? row[8] : null;
 
   if (contractorName && contractorName.name)
     return {
