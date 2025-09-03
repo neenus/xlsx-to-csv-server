@@ -5,6 +5,7 @@ const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+require("dotenv").config();
 
 // import routes
 const contractors = require("./routes/contractors.routes");
@@ -72,16 +73,15 @@ app.post("/convert", async (req, res) => {
       .json({ msg: "Wrong file type was uploaded, please upload excel file" });
   }
 
-  await file.mv(`${inputDir}/${file.name}`, async err => {
-    if (err) {
-      return res.status(500).send(err);
-    }
+  try {
+    // Await the file move to ensure the new file is saved before processing
+    await file.mv(`${inputDir}/${file.name}`);
 
     const worksheet = parseXlsx(file.name, inputDir);
     const csvFile = createCsvFile(file.name, inputDir, outputDir);
     const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
     if (dataToWrite.length) {
-      writeDataToCsv(csvFile, dataToWrite, outputDir);
+      await writeDataToCsv(csvFile, dataToWrite, outputDir);
     } else {
       return res.status(500).json({ msg: "Server failed to convert data" });
     }
@@ -97,18 +97,18 @@ app.post("/convert", async (req, res) => {
       type: "application/csv"
     };
 
-    if (!file) {
-      return res.status(500).json({
-        success: false,
-        msg: "Something went wrong"
-      });
-    } else {
-      res.json({
-        success: true,
-        outputFile
-      });
-    }
-  });
+    res.json({
+      success: true,
+      outputFile
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      msg: "Something went wrong",
+      error: err.message
+    });
+  }
+
 });
 
 app.get("/output/:fileName", (req, res) => {
