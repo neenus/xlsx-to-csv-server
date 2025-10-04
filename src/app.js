@@ -84,7 +84,7 @@ app.post("/convert", async (req, res) => {
     const fileExtension = path.extname(file.name);
     const baseName = path.basename(file.name, fileExtension);
     const uniqueFileName = `${baseName}_${uniqueTimestamp}${fileExtension}`;
-    const filePath = `${inputDir}/${uniqueFileName}`;
+    const filePath = path.join(inputDir, uniqueFileName);
 
     // Await the file move to ensure the new file is saved before processing
     await file.mv(filePath);
