@@ -11,6 +11,7 @@ require("dotenv").config();
 const contractors = require("./routes/contractors.routes");
 const services = require("./routes/services.routes");
 const auth = require("./routes/auth.routes");
+const crypto = require("crypto");
 
 const {
   parseXlsx,
@@ -74,11 +75,22 @@ app.post("/convert", async (req, res) => {
   }
 
   try {
-    // Await the file move to ensure the new file is saved before processing
-    await file.mv(`${inputDir}/${file.name}`);
+    // Create unique filename with timestamp to avoid caching issues
+    const now = new Date();
+    const pad = (n, len = 2) => n.toString().padStart(len, '0');
+    const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds(), 3)}`;
+    const randomId = crypto.randomBytes(2).toString('hex'); // 4 hex characters
+    const uniqueTimestamp = `${timestamp}_${randomId}`;
+    const fileExtension = path.extname(file.name);
+    const baseName = path.basename(file.name, fileExtension);
+    const uniqueFileName = `${baseName}_${uniqueTimestamp}${fileExtension}`;
+    const filePath = path.join(inputDir, uniqueFileName);
 
-    const worksheet = parseXlsx(file.name, inputDir);
-    const csvFile = createCsvFile(file.name, inputDir, outputDir);
+    // Await the file move to ensure the new file is saved before processing
+    await file.mv(filePath);
+
+    const worksheet = parseXlsx(uniqueFileName, inputDir);
+    const csvFile = createCsvFile(uniqueFileName, inputDir, outputDir);
     const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
     if (dataToWrite.length) {
       await writeDataToCsv(csvFile, dataToWrite, outputDir);
