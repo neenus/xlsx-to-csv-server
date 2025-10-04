@@ -5,11 +5,9 @@ const path = require("path");
 const Service = require("../models/Service.model");
 const Contractor = require("../models/Contractor.model");
 
-
-let worksheet;
 let listOfInsuranceInvoices = [];
 
-const parseXlsx = (fileName, inputDir) => worksheet = xlsx.parse(`${inputDir}/${fileName}`);
+const parseXlsx = (fileName, inputDir) => xlsx.parse(`${inputDir}/${fileName}`);
 
 const createCsvFile = (fileName, inputDir, outputDir) => {
   // change file extension to .csv
