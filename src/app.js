@@ -74,11 +74,20 @@ app.post("/convert", async (req, res) => {
   }
 
   try {
-    // Await the file move to ensure the new file is saved before processing
-    await file.mv(`${inputDir}/${file.name}`);
+    // Create unique filename with timestamp to avoid caching issues
+    const now = new Date();
+    const pad = (n) => n.toString().padStart(2, '0');
+    const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    const fileExtension = path.extname(file.name);
+    const baseName = path.basename(file.name, fileExtension);
+    const uniqueFileName = `${baseName}_${timestamp}${fileExtension}`;
+    const filePath = `${inputDir}/${uniqueFileName}`;
 
-    const worksheet = parseXlsx(file.name, inputDir);
-    const csvFile = createCsvFile(file.name, inputDir, outputDir);
+    // Await the file move to ensure the new file is saved before processing
+    await file.mv(filePath);
+
+    const worksheet = parseXlsx(uniqueFileName, inputDir);
+    const csvFile = createCsvFile(uniqueFileName, inputDir, outputDir);
     const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
     if (dataToWrite.length) {
       await writeDataToCsv(csvFile, dataToWrite, outputDir);
