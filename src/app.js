@@ -77,7 +77,7 @@ app.post("/convert", async (req, res) => {
     // Create unique filename with timestamp to avoid caching issues
     const now = new Date();
     const pad = (n) => n.toString().padStart(2, '0');
-    const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+    const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds())}`;
     const fileExtension = path.extname(file.name);
     const baseName = path.basename(file.name, fileExtension);
     const uniqueFileName = `${baseName}_${timestamp}${fileExtension}`;
