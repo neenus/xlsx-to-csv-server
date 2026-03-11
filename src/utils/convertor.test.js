@@ -82,12 +82,12 @@ describe("Test convertor module", () => {
 
   });
 
-  test("createDataToWrite function should not return an empty array", () => {
+  test("createDataToWrite function should not return an empty array", async () => {
     const worksheet = convertor.parseXlsx(finalTestFileName, testFilesDir);
 
     const nextInvoiceNumber = 1000;
     const date = "2023-01-01";
-    const result = createDataToWrite(worksheet, nextInvoiceNumber, date);
+    const result = await createDataToWrite(worksheet, nextInvoiceNumber, date, "final");
     expect(result).not.toEqual([]);
   });
 

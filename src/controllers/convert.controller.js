@@ -48,7 +48,7 @@ exports.convertFile = async (req, res) => {
     await file.mv(path.join(inputDir, uniqueFileName));
 
     const worksheet = parseXlsx(uniqueFileName, inputDir);
-    const csvFile = createCsvFile(uniqueFileName, inputDir, outputDir);
+    const csvFile = await createCsvFile(uniqueFileName, inputDir, outputDir);
     const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
 
     if (!dataToWrite.length) {
