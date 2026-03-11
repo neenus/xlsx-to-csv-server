@@ -14,6 +14,8 @@ const auth = require("./routes/auth.routes");
 const convert = require("./routes/convert.routes");
 const { downloadFile } = require("./controllers/convert.controller");
 
+const { errorHandler } = require("./middlewares/error.middleware");
+
 const app = express();
 
 // Middleware
@@ -49,5 +51,7 @@ app.use("/convert", convert);
 app.use("/api/v1/contractors", contractors);
 app.use("/api/v1/services", services);
 app.use("/api/v1/auth", auth);
+
+app.use(errorHandler);
 
 module.exports = app;

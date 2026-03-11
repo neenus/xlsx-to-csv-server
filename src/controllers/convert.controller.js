@@ -5,6 +5,8 @@ const path = require("path");
 const crypto = require("crypto");
 const { parseXlsx, createCsvFile, writeDataToCsv } = require("../utils/convertor");
 const { createDataToWrite } = require("../services/conversion.service");
+const asyncHandler = require("../middlewares/asyncHandler");
+const { AppError } = require("../middlewares/error.middleware");
 
 const inputDir = path.join(__dirname, "../../storage/input");
 const outputDir = path.join(__dirname, "../../storage/output");
@@ -14,8 +16,7 @@ const SUPPORTED_MIMETYPES = ["spreadsheet", "ms-excel"];
 // @desc    Convert uploaded Excel file to CSV
 // @route   POST /convert
 // @access  Public
-
-exports.convertFile = async (req, res) => {
+exports.convertFile = asyncHandler(async (req, res) => {
   const { nextInvoiceNumber, date, type } = req.body;
 
   if (!req.files) {
@@ -36,57 +37,48 @@ exports.convertFile = async (req, res) => {
       .json({ msg: "Wrong file type was uploaded, please upload excel file" });
   }
 
-  try {
-    const now = new Date();
-    const pad = (n, len = 2) => n.toString().padStart(len, "0");
-    const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds(), 3)}`;
-    const randomId = crypto.randomBytes(2).toString("hex");
-    const fileExtension = path.extname(file.name);
-    const baseName = path.basename(file.name, fileExtension);
-    const uniqueFileName = `${baseName}_${timestamp}_${randomId}${fileExtension}`;
+  const now = new Date();
+  const pad = (n, len = 2) => n.toString().padStart(len, "0");
+  const timestamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}${pad(now.getMilliseconds(), 3)}`;
+  const randomId = crypto.randomBytes(2).toString("hex");
+  const fileExtension = path.extname(file.name);
+  const baseName = path.basename(file.name, fileExtension);
+  const uniqueFileName = `${baseName}_${timestamp}_${randomId}${fileExtension}`;
 
-    await file.mv(path.join(inputDir, uniqueFileName));
+  await file.mv(path.join(inputDir, uniqueFileName));
 
-    const worksheet = parseXlsx(uniqueFileName, inputDir);
-    const csvFile = await createCsvFile(uniqueFileName, inputDir, outputDir);
-    const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
+  const worksheet = parseXlsx(uniqueFileName, inputDir);
+  const csvFile = await createCsvFile(uniqueFileName, inputDir, outputDir);
+  const dataToWrite = await createDataToWrite(worksheet, nextInvoiceNumber, date, type);
 
-    if (!dataToWrite.length) {
-      return res.status(500).json({ msg: "Server failed to convert data" });
-    }
-
-    await writeDataToCsv(csvFile, dataToWrite, outputDir);
-
-    const files = fs.readdirSync(outputDir);
-    const fileName = files.find(f => f.includes(csvFile));
-    const baseUrl = process.env.NODE_ENV === "development"
-      ? process.env.BASE_URL
-      : process.env.BASE_URL_PROD;
-
-    return res.json({
-      success: true,
-      outputFile: {
-        name: fileName,
-        url: `${baseUrl}/output/${encodeURIComponent(fileName)}`,
-        size: fs.existsSync(`${outputDir}/${fileName}`)
-          ? fs.statSync(`${outputDir}/${fileName}`).size
-          : 0,
-        type: "application/csv"
-      }
-    });
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      msg: "Something went wrong",
-      error: err.message
-    });
+  if (!dataToWrite.length) {
+    throw new AppError("Server failed to convert data", 500);
   }
-};
+
+  await writeDataToCsv(csvFile, dataToWrite, outputDir);
+
+  const files = fs.readdirSync(outputDir);
+  const fileName = files.find(f => f.includes(csvFile));
+  const baseUrl = process.env.NODE_ENV === "development"
+    ? process.env.BASE_URL
+    : process.env.BASE_URL_PROD;
+
+  res.json({
+    success: true,
+    outputFile: {
+      name: fileName,
+      url: `${baseUrl}/output/${encodeURIComponent(fileName)}`,
+      size: fs.existsSync(`${outputDir}/${fileName}`)
+        ? fs.statSync(`${outputDir}/${fileName}`).size
+        : 0,
+      type: "application/csv"
+    }
+  });
+});
 
 // @desc    Download converted CSV file
 // @route   GET /output/:fileName
 // @access  Public
-
 exports.downloadFile = (req, res) => {
   const fileName = req.params.fileName;
   const filePath = path.join(outputDir, fileName);

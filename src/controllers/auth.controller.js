@@ -1,50 +1,34 @@
 const axios = require('axios');
+const asyncHandler = require('../middlewares/asyncHandler');
 
 // @desc    Login user
 // @route   POST /api/v1/auth/login
 // @access  Public
-exports.login = async (req, res, next) => {
+exports.login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  const authServiceUrl = process.env.NODE_ENV === 'production' ? process.env.AUTH_SERVICE_URL : process.env.AUTH_SERVICE_URL_DEV;
+  const authServiceUrl = process.env.NODE_ENV === 'production'
+    ? process.env.AUTH_SERVICE_URL
+    : process.env.AUTH_SERVICE_URL_DEV;
 
-  try {
-    // Proxy authentication request to auth service from Doc-Hub Server
-    const response = await axios.post(`${authServiceUrl}/login`, {
-      email,
-      password
-    });
+  const response = await axios.post(`${authServiceUrl}/login`, { email, password });
 
-    return res.
-      status(200)
-      .cookie('token', response.data.data.token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-      })
-      .json(response.data.data);
-  } catch (err) {
-    return res.status(500).json({
-      success: false,
-      error: 'Server Error'
-    });
-  }
-}
+  res
+    .status(200)
+    .cookie('token', response.data.data.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+    })
+    .json(response.data.data);
+});
 
 // @desc    Logout user
 // @route   GET /api/v1/auth/logout
 // @access  Private
-
-exports.logout = async (req, res, next) => {
+exports.logout = asyncHandler(async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.status(401).json({
-      success: false,
-      error: 'Not authorized to access this route'
-    });
+    return res.status(401).json({ success: false, error: 'Not authorized to access this route' });
   }
-
-  return res
-    .clearCookie('token')
-    .status(200)
-    .json({ success: true, data: {} });
-}
+  res.clearCookie('token').status(200).json({ success: true, data: {} });
+});
 
