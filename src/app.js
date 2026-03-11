@@ -16,9 +16,10 @@ const crypto = require("crypto");
 const {
   parseXlsx,
   createCsvFile,
-  createDataToWrite,
   writeDataToCsv
 } = require("./utils/convertor");
+
+const { createDataToWrite } = require("./services/conversion.service");
 
 const inputDir = path.join(__dirname, "../storage/input");
 const outputDir = path.join(__dirname, "../storage/output");
