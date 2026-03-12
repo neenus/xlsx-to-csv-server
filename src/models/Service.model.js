@@ -8,7 +8,7 @@ const ServiceSchema = new Schema({
     trim: true,
     maxlength: [50, 'Service name cannot be more than 50 characters']
   },
-  education_level: {
+  service_education_level: {
     type: [String],
     required: [true, 'Please add an education level'],
     enum: [

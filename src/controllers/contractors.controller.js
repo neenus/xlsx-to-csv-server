@@ -16,8 +16,8 @@ exports.getContractors = asyncHandler(async (req, res) => {
 // @route   POST /api/v1/contractors
 // @access  Private
 exports.addContractor = asyncHandler(async (req, res) => {
-  const { name, address, city, state, zip, phone, email } = req.body;
-  const contractor = await Contractor.create({ name, address, city, state, zip, phone, email });
+  const { contractor_name, contractor_address, contractor_city, contractor_state, contractor_zip, contractor_phone, contractor_email } = req.body;
+  const contractor = await Contractor.create({ contractor_name, contractor_address, contractor_city, contractor_state, contractor_zip, contractor_phone, contractor_email });
   res.status(201).json({ success: true, data: contractor });
 });
 

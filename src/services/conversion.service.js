@@ -43,8 +43,8 @@ const normalizeLevel = rawLevel => {
 const buildContractorMap = contractors => {
   const map = new Map();
   (contractors || []).forEach(contractor => {
-    if (!contractor || !contractor.name) return;
-    map.set(normalize(contractor.name), contractor);
+    if (!contractor || !contractor.contractor_name) return;
+    map.set(normalize(contractor.contractor_name), contractor);
   });
   return map;
 };
@@ -61,7 +61,7 @@ const buildServiceIndexes = services => {
       byName.set(serviceNameKey, service);
     }
 
-    (service.education_level || []).forEach(level => {
+    (service.service_education_level || []).forEach(level => {
       byNameAndLevel.set(`${serviceNameKey}|${normalize(level)}`, service);
     });
   });
@@ -141,8 +141,8 @@ const convertProposed = ({ data, invoiceStart, invoiceDate, contractorMap, servi
       normalize(notesText).includes("insurance receipt") || isTruthyMarker(row[9]);
 
     const description = hasInsuranceReceipt
-      ? `${quantity} hours of ${serviceName} with ${contractor.name} for the month of ${month} - insurance receipt to be issued at the end of the month`
-      : `${quantity} hours of ${serviceName} with ${contractor.name} for the month of ${month}`;
+      ? `${quantity} hours of ${serviceName} with ${contractor.contractor_name} for the month of ${month} - insurance receipt to be issued at the end of the month`
+      : `${quantity} hours of ${serviceName} with ${contractor.contractor_name} for the month of ${month}`;
 
     const customer = row[1] || row[2] || row[8] || "";
     const amount = Number((quantity * serviceRate).toFixed(2));

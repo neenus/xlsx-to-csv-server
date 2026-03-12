@@ -1,29 +1,29 @@
 [
   {
-    "name": "Jane Smith",
-    "address": "123 Main St",
-    "city": "Toronto",
-    "state": "ON",
-    "zip": "M5H 2N2",
-    "phone": "416-555-1234",
-    "email": "jane.smith@example.com"
+    "contractor_name": "Jane Smith",
+    "contractor_address": "123 Main St",
+    "contractor_city": "Toronto",
+    "contractor_state": "ON",
+    "contractor_zip": "M5H 2N2",
+    "contractor_phone": "416-555-1234",
+    "contractor_email": "jane.smith@example.com"
   },
   {
-    "name": "John Doe",
-    "address": "456 Robson St",
-    "city": "Vancouver",
-    "state": "BC",
-    "zip": "V6B 2B2",
-    "phone": "604-555-5678",
-    "email": "john.doe@example.com"
+    "contractor_name": "John Doe",
+    "contractor_address": "456 Robson St",
+    "contractor_city": "Vancouver",
+    "contractor_state": "BC",
+    "contractor_zip": "V6B 2B2",
+    "contractor_phone": "604-555-5678",
+    "contractor_email": "john.doe@example.com"
   },
   {
-    "name": "Lisa Marshall",
-    "address": "789 Rideau St",
-    "city": "Ottawa",
-    "state": "ON",
-    "zip": "K1N 5X9",
-    "phone": "613-555-9012",
-    "email": "lisa.marshall@example.com"
+    "contractor_name": "Lisa Marshall",
+    "contractor_address": "789 Rideau St",
+    "contractor_city": "Ottawa",
+    "contractor_state": "ON",
+    "contractor_zip": "K1N 5X9",
+    "contractor_phone": "613-555-9012",
+    "contractor_email": "lisa.marshall@example.com"
   }
 ]

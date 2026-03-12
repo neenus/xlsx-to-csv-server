@@ -15,8 +15,8 @@ exports.getServices = asyncHandler(async (req, res) => {
 // @route   POST /api/v1/services
 // @access  Public
 exports.addService = asyncHandler(async (req, res) => {
-  const { service_name, education_level, service_rate } = req.body;
-  const service = await Service.create({ service_name, education_level, service_rate });
+  const { service_name, service_education_level, service_rate } = req.body;
+  const service = await Service.create({ service_name, service_education_level, service_rate });
   res.status(201).json({ success: true, data: service });
 });
 
@@ -36,9 +36,9 @@ exports.updateService = asyncHandler(async (req, res) => {
   const service = await Service.findById(req.params.id);
   if (!service) throw new AppError('No service found', 404);
 
-  const { service_name, education_level, service_rate } = req.body;
+  const { service_name, service_education_level, service_rate } = req.body;
   service_name && (service.service_name = service_name);
-  education_level && (service.education_level = education_level);
+  service_education_level && (service.service_education_level = service_education_level);
   service_rate && (service.service_rate = service_rate);
 
   await service.save();
