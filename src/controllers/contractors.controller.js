@@ -51,38 +51,3 @@ exports.editContractor = asyncHandler(async (req, res) => {
   if (!contractor) throw new AppError('No contractor found', 404);
   res.status(200).json({ success: true, data: contractor });
 });
-
-
-
-// @desc    Temporary route to seed database
-// @route   POST /api/v1/contractors/seed
-// @access  Public
-
-// exports.seedContractors = async (req, res, next) => {
-//   // drop existing contractors collection
-//   try {
-//     await Contractor.collection.drop();
-//   } catch (err) {
-//     console.log({ err })
-//   }
-
-//   // seed database with contractors.json data using contractor name only
-// try {
-//   const contractors = await Contractor.create(contractorsJSON.map(contractor => {
-//     console.log(contractor.name);
-//     return { name: contractor.name }
-//   }));
-
-//   return res.status(201).json({
-//     success: true,
-//     count: contractors.length,
-//     data: contractors
-//   });
-// } catch (err) {
-//   console.log({ err })
-//   return res.status(500).json({
-//     success: false,
-//     error: 'Server Error'
-//   })
-// }
-// }

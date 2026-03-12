@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Jane Smith",
+    "address": "123 Main St",
+    "city": "Toronto",
+    "state": "ON",
+    "zip": "M5H 2N2",
+    "phone": "416-555-1234",
+    "email": "jane.smith@example.com"
+  },
+  {
+    "name": "John Doe",
+    "address": "456 Robson St",
+    "city": "Vancouver",
+    "state": "BC",
+    "zip": "V6B 2B2",
+    "phone": "604-555-5678",
+    "email": "john.doe@example.com"
+  },
+  {
+    "name": "Lisa Marshall",
+    "address": "789 Rideau St",
+    "city": "Ottawa",
+    "state": "ON",
+    "zip": "K1N 5X9",
+    "phone": "613-555-9012",
+    "email": "lisa.marshall@example.com"
+  }
+]

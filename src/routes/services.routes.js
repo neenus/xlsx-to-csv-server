@@ -6,7 +6,6 @@ const {
   addService,
   getService,
   updateService,
-  // seedServices
 } = require('../controllers/services.controller');
 
 router.route('/')
@@ -16,8 +15,5 @@ router.route('/')
 router.route('/:id')
   .get(getService)
   .put(updateService);
-
-// router.route('/seed')
-//   .post(seedServices);
 
 module.exports = router;
