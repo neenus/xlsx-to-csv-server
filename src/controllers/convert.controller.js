@@ -20,13 +20,13 @@ exports.convertFile = asyncHandler(async (req, res) => {
   const { nextInvoiceNumber, date, type } = req.body;
 
   if (!req.files) {
-    return res.status(400).json({ msg: "No file uploaded" });
+    return res.status(400).json({ success: false, error: "No file uploaded" });
   }
   if (!nextInvoiceNumber) {
-    return res.status(400).json({ msg: "Please provide nextInvoiceNumber" });
+    return res.status(400).json({ success: false, error: "Please provide nextInvoiceNumber" });
   }
   if (!date) {
-    return res.status(400).json({ msg: "Please provide date" });
+    return res.status(400).json({ success: false, error: "Please provide date" });
   }
 
   const file = req.files.file;
@@ -34,7 +34,7 @@ exports.convertFile = asyncHandler(async (req, res) => {
   if (!isValidType) {
     return res
       .status(400)
-      .json({ msg: "Wrong file type was uploaded, please upload excel file" });
+      .json({ success: false, error: "Wrong file type was uploaded, please upload excel file" });
   }
 
   const now = new Date();
@@ -65,7 +65,7 @@ exports.convertFile = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    outputFile: {
+    data: {
       name: fileName,
       url: `${baseUrl}/output/${encodeURIComponent(fileName)}`,
       size: fs.existsSync(`${outputDir}/${fileName}`)
@@ -85,11 +85,11 @@ exports.downloadFile = (req, res) => {
 
   // Prevent path traversal: resolved path must stay within outputDir
   if (!filePath.startsWith(outputDir + path.sep) && filePath !== outputDir) {
-    return res.status(400).json({ msg: "Invalid file name" });
+    return res.status(400).json({ success: false, error: "Invalid file name" });
   }
 
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ msg: "File not found" });
+    return res.status(404).json({ success: false, error: "File not found" });
   }
 
   res.download(filePath);

@@ -33,7 +33,7 @@ app.use(
 app.use(cookieParser());
 
 // Routes
-app.get("/", (req, res) => res.send({ msg: "Hello Convertor" }));
+app.get("/", (req, res) => res.json({ success: true, data: { message: "Hello Convertor" } }));
 
 app.get("/api/v1/version", (req, res) => {
   const packageJson = fs.readFileSync(
@@ -41,7 +41,7 @@ app.get("/api/v1/version", (req, res) => {
     "utf8"
   );
   const version = JSON.parse(packageJson).version;
-  res.json({ version });
+  res.json({ success: true, data: { version } });
 });
 
 app.get("/output/:fileName", downloadFile);

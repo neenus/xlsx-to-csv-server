@@ -19,7 +19,7 @@ describe("GET / - Test api root directory", () => {
   test("It should respond with a 200 and message Hello Convertor", async () => {
     const response = await request(app).get("/");
     expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual({ msg: "Hello Convertor" });
+    expect(response.body).toEqual({ success: true, data: { message: "Hello Convertor" } });
   });
 })
 
@@ -28,7 +28,7 @@ describe("POST /convert - upload document to convertor", () => {
   test("It should respond with a 400 status code and a message if no file is uploaded", async () => {
     const response = await request(app).post("/convert");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ msg: "No file uploaded" });
+    expect(response.body).toEqual({ success: false, error: "No file uploaded" });
   });
 
   test("It should respond with a 400 status code and a message if no nextInvoiceNumber is provided", async () => {
@@ -38,7 +38,7 @@ describe("POST /convert - upload document to convertor", () => {
       .field("date", "2023-01-01")
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ msg: "Please provide nextInvoiceNumber" });
+    expect(response.body).toEqual({ success: false, error: "Please provide nextInvoiceNumber" });
   });
 
   test("It should respond with a 400 status code and a message if no date is provided", async () => {
@@ -48,7 +48,7 @@ describe("POST /convert - upload document to convertor", () => {
       .field("nextInvoiceNumber", "1000")
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ msg: "Please provide date" });
+    expect(response.body).toEqual({ success: false, error: "Please provide date" });
   });
 
   test("It should response with a 400 status code and a message when file type uploaded is not excel", async () => {
@@ -58,7 +58,7 @@ describe("POST /convert - upload document to convertor", () => {
       .field("nextInvoiceNumber", 1000)
       .field("date", "2023-01-01");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ msg: "Wrong file type was uploaded, please upload excel file" });
+    expect(response.body).toEqual({ success: false, error: "Wrong file type was uploaded, please upload excel file" });
   });
 
   test("It should check if the uploaded file exists in the input directory", async () => {
@@ -94,7 +94,7 @@ describe("GET /output/:filename - download document from convertor", () => {
   test("It should respond with a 404 status code and a message if file is not found in output directory ", async () => {
     const response = await request(app).get("/output/doesnotexist.csv");
     expect(response.statusCode).toBe(404);
-    expect(response.body).toEqual({ msg: "File not found" });
+    expect(response.body).toEqual({ success: false, error: "File not found" });
   });
 
   test("It should respond with a 200 status code", async () => {
