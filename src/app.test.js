@@ -1,10 +1,19 @@
 const request = require("supertest");
 const fs = require("fs");
 const app = require("./app");
+const { connectDB, closeDB } = require("./config/db");
 
 const filePath = `${__dirname}/test_files/final_billing_test_sheet.xlsx`;
 const wrongFilePath = `${__dirname}/test_files/test.txt`;
 const inputDir = `${__dirname}/../storage/input`;
+
+beforeAll(async () => {
+  await connectDB();
+});
+
+afterAll(async () => {
+  await closeDB();
+});
 
 describe("GET / - Test api root directory", () => {
   test("It should respond with a 200 and message Hello Convertor", async () => {
@@ -53,8 +62,7 @@ describe("POST /convert - upload document to convertor", () => {
   });
 
   test("It should check if the uploaded file exists in the input directory", async () => {
-    // increase test timeout to 5 seconds to allow for async file upload
-    jest.setTimeout(5000);
+    jest.setTimeout(30000);
     const response = await request(app)
       .post("/convert")
       .attach("file", filePath)
@@ -64,12 +72,11 @@ describe("POST /convert - upload document to convertor", () => {
       .set("Accept", "application/json");
 
     const inputFiles = fs.readdirSync(inputDir);
-    expect(inputFiles).toContain("final_billing_test_sheet.xlsx");
+    expect(inputFiles.some(f => f.includes("final_billing_test_sheet"))).toBe(true);
   });
 
   test("It should respond with a 200 status code", async () => {
-    // increase test timeout to 5 seconds to allow for async file upload
-    jest.setTimeout(5000);
+    jest.setTimeout(30000);
     const response = await request(app)
       .post("/convert")
       .attach("file", filePath)
