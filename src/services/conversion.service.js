@@ -224,8 +224,96 @@ const convertFinal = ({ workbook, invoiceStart, invoiceDate, serviceIndexes }) =
   return rows;
 };
 
+const convertNew = ({ data, columnMapping, invoiceStart, invoiceDate, serviceIndexes }) => {
+  const {
+    practitioner: pCol,
+    student: sCol,
+    parent: parentCol,
+    serviceDesc: serviceCol,
+    hours: hoursCol,
+    insuranceReceipt: insuranceCol,
+    registrationFee: regFeeCol
+  } = columnMapping;
+
+  let invoiceNo = Number(invoiceStart);
+  const rows = [];
+  let currentPractitioner = "";
+  const month = getMonthName(invoiceDate);
+
+  data.forEach(row => {
+    if (!Array.isArray(row)) return;
+
+    // Carry practitioner name down when cell is not empty
+    const rawPractitioner = row[pCol];
+    if (rawPractitioner != null && String(rawPractitioner).trim() !== "") {
+      currentPractitioner = String(rawPractitioner).trim();
+    }
+
+    // Skip rows with no student name
+    const student = row[sCol] != null ? String(row[sCol]).trim() : "";
+    if (!student) return;
+
+    const parent = row[parentCol] != null ? String(row[parentCol]).trim() : "";
+    const rawServiceDesc = row[serviceCol] != null ? String(row[serviceCol]).trim() : "";
+    const hours = Number(row[hoursCol]);
+    const hasInsuranceReceipt = isTruthyMarker(row[insuranceCol]);
+    const hasRegistrationFee = isTruthyMarker(row[regFeeCol]);
+
+    if (!Number.isFinite(hours) || hours <= 0) return;
+    if (!rawServiceDesc) return;
+
+    // Pass verbose description as both service name and level:
+    // alias lookup matches against full description; normalizeLevel detects embedded level keywords
+    const { name: serviceName, rate: serviceRate } = resolveService(
+      rawServiceDesc,
+      rawServiceDesc,
+      serviceIndexes
+    );
+
+    if (!serviceName) return;
+
+    const rateFixed = serviceRate != null ? Number(Number(serviceRate).toFixed(2)) : "";
+    const amount = serviceRate != null ? Number((hours * serviceRate).toFixed(2)) : "";
+
+    const description = hasInsuranceReceipt
+      ? `${hours} hours of ${serviceName} with ${currentPractitioner} for the month of ${month} - insurance receipt to be issued at the end of the month.`
+      : `${hours} hours of ${serviceName} with ${currentPractitioner} for the month of ${month}`;
+
+    rows.push(toCsvRow({
+      invoiceNo,
+      customer: student,
+      invoiceDate,
+      service: serviceName,
+      description,
+      quantity: hours,
+      rate: rateFixed,
+      amount
+    }));
+    invoiceNo++;
+
+    // Enrollment fee invoice
+    if (hasRegistrationFee) {
+      const feeCustomer =
+        !parent || normalize(parent) === "n/a" ? student : parent;
+      rows.push(toCsvRow({
+        invoiceNo,
+        customer: feeCustomer,
+        invoiceDate,
+        service: "Enrolment Fee",
+        description: "Enrolment Fee",
+        quantity: 1,
+        rate: 120,
+        amount: 120
+      }));
+      invoiceNo++;
+    }
+  });
+
+  return rows;
+};
+
 const convertWorkbook = ({ workbook, type, invoiceStart, invoiceDate, lookups = {} }) => {
-  if (!type || (type !== "proposed" && type !== "final")) {
+  if (!type || !["proposed", "final", "new"].includes(type)) {
     throw new Error("Invalid conversion type");
   }
 
@@ -235,11 +323,20 @@ const convertWorkbook = ({ workbook, type, invoiceStart, invoiceDate, lookups = 
   }
 
   const formattedInvoiceDate = formatInvoiceDate(invoiceDate);
-
   const contractorMap = lookups.contractorMap || buildContractorMap(lookups.contractors);
-  const serviceIndexes =
-    lookups.serviceIndexes ||
-    buildServiceIndexes(lookups.services);
+  const serviceIndexes = lookups.serviceIndexes || buildServiceIndexes(lookups.services);
+
+  if (type === "new") {
+    const columnMapping = lookups.columnMapping;
+    if (!columnMapping) throw new Error("columnMapping is required for type 'new'");
+    return convertNew({
+      data: workbook,
+      columnMapping,
+      invoiceStart: parsedInvoiceStart,
+      invoiceDate: formattedInvoiceDate,
+      serviceIndexes
+    });
+  }
 
   if (type === "proposed") {
     const billingSheet = getBillingSheet(workbook);
