@@ -357,18 +357,27 @@ const convertWorkbook = ({ workbook, type, invoiceStart, invoiceDate, lookups = 
   });
 };
 
-const createDataToWrite = async (worksheet, nextInvoiceNumber, date, type) => {
-  const contractorsList = await Contractor.find({});
+const createDataToWrite = async (worksheet, nextInvoiceNumber, date, columnMapping) => {
   const servicesList = await Service.find({});
+  const serviceIndexes = buildServiceIndexes(servicesList);
+
+  // Find header row in the billing sheet
+  const billingSheet = getBillingSheet(worksheet);
+  const allRows = billingSheet.data || [];
+  const headerRowIndex = allRows.findIndex(row =>
+    Array.isArray(row) &&
+    row.some(cell => normalize(String(cell == null ? "" : cell)).includes("practitioner"))
+  );
+
+  // Data rows start after the header row; if no header found use all rows
+  const dataRows = headerRowIndex !== -1 ? allRows.slice(headerRowIndex + 1) : allRows;
+
   return convertWorkbook({
-    workbook: worksheet,
-    type,
+    workbook: dataRows,
+    type: "new",
     invoiceStart: nextInvoiceNumber,
     invoiceDate: date,
-    lookups: {
-      contractors: contractorsList,
-      services: servicesList
-    }
+    lookups: { serviceIndexes, columnMapping }
   });
 };
 

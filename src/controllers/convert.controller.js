@@ -19,9 +19,9 @@ const normalizeCell = v => (v == null ? "" : String(v).trim().toLowerCase());
 // @route   POST /convert
 // @access  Public
 exports.convertFile = asyncHandler(async (req, res) => {
-  const { nextInvoiceNumber, date, type } = req.body;
+  const { nextInvoiceNumber, date, columnMapping: rawColumnMapping } = req.body;
 
-  if (!req.files) {
+  if (!req.files || !req.files.file) {
     return res.status(400).json({ success: false, error: "No file uploaded" });
   }
   if (!nextInvoiceNumber) {
@@ -31,12 +31,22 @@ exports.convertFile = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, error: "Please provide date" });
   }
 
+  let columnMapping;
+  try {
+    columnMapping = typeof rawColumnMapping === "string"
+      ? JSON.parse(rawColumnMapping)
+      : rawColumnMapping;
+  } catch {
+    return res.status(400).json({ success: false, error: "Invalid columnMapping JSON" });
+  }
+  if (!columnMapping || typeof columnMapping !== "object") {
+    return res.status(400).json({ success: false, error: "Please provide columnMapping" });
+  }
+
   const file = req.files.file;
   const isValidType = SUPPORTED_MIMETYPES.some(t => file.mimetype.includes(t));
   if (!isValidType) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Wrong file type was uploaded, please upload excel file" });
+    return res.status(400).json({ success: false, error: "Wrong file type, please upload an excel file" });
   }
 
   const uniqueFileName = buildUniqueUploadName(file.name);
@@ -47,14 +57,13 @@ exports.convertFile = asyncHandler(async (req, res) => {
     uniqueFileName,
     nextInvoiceNumber,
     date,
-    type
+    columnMapping
   });
 
   if (!rows.length) {
     throw new AppError("Server failed to convert data", 500);
   }
 
-  const fileName = csvFile;
   const baseUrl = process.env.NODE_ENV === "development"
     ? process.env.BASE_URL
     : process.env.BASE_URL_PROD;
@@ -62,10 +71,10 @@ exports.convertFile = asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: {
-      name: fileName,
-      url: `${baseUrl}/output/${encodeURIComponent(fileName)}`,
-      size: fs.existsSync(`${outputDir}/${fileName}`)
-        ? fs.statSync(`${outputDir}/${fileName}`).size
+      name: csvFile,
+      url: `${baseUrl}/output/${encodeURIComponent(csvFile)}`,
+      size: fs.existsSync(`${outputDir}/${csvFile}`)
+        ? fs.statSync(`${outputDir}/${csvFile}`).size
         : 0,
       type: "application/csv"
     }
