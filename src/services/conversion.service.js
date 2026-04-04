@@ -1,5 +1,4 @@
 const Service = require("../models/Service.model");
-const Contractor = require("../models/Contractor.model");
 
 const CSV_TERMS = "Due on Receipt";
 
