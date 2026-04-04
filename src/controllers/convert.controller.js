@@ -106,7 +106,19 @@ exports.parseHeaders = asyncHandler(async (req, res) => {
   }
 
   // Parse from buffer — node-xlsx accepts a Buffer directly, no disk write needed
-  const sheets = xlsx.parse(file.data);
+  if (!file.data || file.data.length === 0) {
+    return res.status(400).json({ success: false, error: "Uploaded file is empty" });
+  }
+
+  let sheets;
+  try {
+    sheets = xlsx.parse(file.data);
+  } catch {
+    return res.status(422).json({
+      success: false,
+      error: "Invalid or corrupted Excel file. Unable to parse."
+    });
+  }
 
   // Find billing sheet by name, fall back to first sheet
   const billingSheet = sheets.find(s => normalizeCell(s.name).includes("billing")) || sheets[0];
