@@ -2,7 +2,7 @@ const request = require("supertest");
 const fs = require("fs");
 const csv = require("csvtojson");
 const convertor = require("./convertor");
-const { createDataToWrite } = require("../services/conversion.service");
+const { createDataToWrite, buildServiceIndexes, convertWorkbook } = require("../services/conversion.service");
 const { connectDB, closeDB } = require("../config/db");
 
 const testFilesDir = `${__dirname}/../test_files`;
@@ -106,5 +106,43 @@ describe("Test convertor module", () => {
     const csvFilePath = `${outputDir}/${csvFile}`;
     const dataFromCsvFile = await csv().fromFile(csvFilePath);
     expect(data).toEqual(dataFromCsvFile);
+  });
+});
+
+describe("resolveService alias matching", () => {
+  const mockServices = [
+    {
+      _id: "1",
+      service_name: "Academic Strategies",
+      service_education_level: ["elementary", "high school"],
+      service_rate: 85,
+      aliases: ["academic and writing strategies", "academic & writing strategies"]
+    },
+    {
+      _id: "2",
+      service_name: "Reading Remediation",
+      service_education_level: ["elementary", "high school"],
+      service_rate: 86,
+      aliases: ["reading reading remediation"]
+    }
+  ];
+
+  test("resolves service by alias substring match", () => {
+    const indexes = buildServiceIndexes(mockServices);
+    expect(indexes.byAlias.has("academic and writing strategies")).toBe(true);
+    expect(indexes.byAlias.has("academic & writing strategies")).toBe(true);
+    expect(indexes.byAlias.has("reading reading remediation")).toBe(true);
+  });
+
+  test("resolves service name from verbose description via alias", () => {
+    const indexes = buildServiceIndexes(mockServices);
+    const aliasKey = "academic and writing strategies";
+    const desc = "elementary academic and writing strategies";
+    let matched = null;
+    for (const [key, svc] of indexes.byAlias) {
+      if (desc.includes(key)) { matched = svc; break; }
+    }
+    expect(matched).not.toBeNull();
+    expect(matched.service_name).toBe("Academic Strategies");
   });
 });

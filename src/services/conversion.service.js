@@ -52,6 +52,7 @@ const buildContractorMap = contractors => {
 const buildServiceIndexes = services => {
   const byName = new Map();
   const byNameAndLevel = new Map();
+  const byAlias = new Map();
 
   (services || []).forEach(service => {
     if (!service || !service.service_name) return;
@@ -64,9 +65,16 @@ const buildServiceIndexes = services => {
     (service.service_education_level || []).forEach(level => {
       byNameAndLevel.set(`${serviceNameKey}|${normalize(level)}`, service);
     });
+
+    (service.aliases || []).forEach(alias => {
+      const aliasKey = normalize(alias);
+      if (aliasKey && !byAlias.has(aliasKey)) {
+        byAlias.set(aliasKey, service);
+      }
+    });
   });
 
-  return { byName, byNameAndLevel };
+  return { byName, byNameAndLevel, byAlias };
 };
 
 const resolveService = (rawServiceName, rawLevel, serviceIndexes) => {
@@ -75,13 +83,28 @@ const resolveService = (rawServiceName, rawLevel, serviceIndexes) => {
 
   const normalizedLevel = normalizeLevel(rawLevel);
   const byLevel = serviceIndexes.byNameAndLevel.get(`${serviceNameKey}|${normalizedLevel}`);
-  const fallback = serviceIndexes.byName.get(serviceNameKey);
-  const service = byLevel || fallback;
+  const byName = serviceIndexes.byName.get(serviceNameKey);
+
+  // Alias lookup: check if any registered alias is a substring of the description
+  let byAlias = null;
+  if (!byLevel && !byName && serviceIndexes.byAlias) {
+    for (const [aliasKey, service] of serviceIndexes.byAlias) {
+      if (serviceNameKey.includes(aliasKey)) {
+        byAlias = service;
+        break;
+      }
+    }
+  }
+
+  const service = byLevel || byName || byAlias;
 
   if (!service) {
+    // Fallback: try to parse rate from description text e.g. "$90/hr", "$60/hr"
+    const rateMatch = rawServiceName && rawServiceName.toString().match(/\$(\d+(?:\.\d+)?)(?:\/hr)?/);
+    const parsedRate = rateMatch ? Number(rateMatch[1]) : null;
     return {
       name: rawServiceName ? rawServiceName.toString().trim() : null,
-      rate: null
+      rate: parsedRate
     };
   }
 
