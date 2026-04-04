@@ -20,6 +20,10 @@ const ServiceSchema = new Schema({
   service_rate: {
     type: Number,
     required: [true, 'Please add a service rate']
+  },
+  aliases: {
+    type: [String],
+    default: []
   }
 },
   {
