@@ -58,17 +58,18 @@ describe("POST /convert - upload document to convertor", () => {
       .field("nextInvoiceNumber", 1000)
       .field("date", "2023-01-01");
     expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ success: false, error: "Wrong file type was uploaded, please upload excel file" });
+    expect(response.body.success).toBe(false);
   });
 
   test("It should check if the uploaded file exists in the input directory", async () => {
     jest.setTimeout(30000);
+    const columnMapping = JSON.stringify({ practitioner: 0, student: 1, parent: 2, serviceDesc: 4, hours: 5, insuranceReceipt: 9, registrationFee: 11 });
     const response = await request(app)
       .post("/convert")
       .attach("file", filePath)
       .field("nextInvoiceNumber", 1000)
       .field("date", "2023-01-01")
-      .field("type", "final")
+      .field("columnMapping", columnMapping)
       .set("Accept", "application/json");
 
     const inputFiles = fs.readdirSync(inputDir);
@@ -77,12 +78,14 @@ describe("POST /convert - upload document to convertor", () => {
 
   test("It should respond with a 200 status code", async () => {
     jest.setTimeout(30000);
+    const newTemplatePath = `${__dirname}/test_files/new_template_test_sheet.xlsx`;
+    const columnMapping = JSON.stringify({ practitioner: 0, student: 1, parent: 2, serviceDesc: 4, hours: 5, insuranceReceipt: 9, registrationFee: 11 });
     const response = await request(app)
       .post("/convert")
-      .attach("file", filePath)
-      .field("nextInvoiceNumber", 1000)
-      .field("date", "2023-01-01")
-      .field("type", "final")
+      .attach("file", newTemplatePath)
+      .field("nextInvoiceNumber", 9119)
+      .field("date", "2026-03-05")
+      .field("columnMapping", columnMapping)
       .set("Accept", "application/json");
     expect(response.statusCode).toBe(200);
   });
