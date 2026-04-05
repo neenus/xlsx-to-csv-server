@@ -4,37 +4,37 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ContractorSchema = new Schema({
-  name: {
+  contractor_name: {
     type: String,
     required: [true, 'Please add a name'],
     trim: true,
     maxlength: [50, 'Name can not be more than 50 characters']
   },
-  address: {
+  contractor_address: {
     type: String,
     required: [true, 'Please add an address'],
     trim: true,
     maxlength: [50, 'Address can not be more than 50 characters']
   },
-  city: {
+  contractor_city: {
     type: String,
     required: [true, 'Please add a city'],
     trim: true,
     maxlength: [50, 'City can not be more than 50 characters']
   },
-  state: {
+  contractor_state: {
     type: String,
     required: [true, 'Please add a state'],
     trim: true,
     maxlength: [50, 'State can not be more than 50 characters']
   },
-  zip: {
+  contractor_zip: {
     type: String,
     required: [true, 'Please add a zip'],
     trim: true,
     maxlength: [50, 'Zip can not be more than 50 characters']
   },
-  phone: {
+  contractor_phone: {
     type: String,
     required: [true, 'Please add a phone'],
     trim: true,
@@ -44,7 +44,7 @@ const ContractorSchema = new Schema({
       'Please add a valid phone number'
     ]
   },
-  email: {
+  contractor_email: {
     type: String,
     required: [true, 'Please add an email'],
     trim: true,

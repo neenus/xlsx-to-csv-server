@@ -1,0 +1,37 @@
+[
+  {
+    "service_name": "Academic Strategist",
+    "service_education_level": ["postsecondary"],
+    "service_rate": 85.00
+  },
+  {
+    "service_name": "Academic Strategist",
+    "service_education_level": ["high school"],
+    "service_rate": 75.00
+  },
+  {
+    "service_name": "Academic Strategist",
+    "service_education_level": ["elementary"],
+    "service_rate": 65.00
+  },
+  {
+    "service_name": "Math Remediation",
+    "service_education_level": ["elementary", "high school"],
+    "service_rate": 60.00
+  },
+  {
+    "service_name": "Reading Support",
+    "service_education_level": ["elementary"],
+    "service_rate": 55.00
+  },
+  {
+    "service_name": "Speech Language Pathology",
+    "service_education_level": ["elementary", "high school", "postsecondary"],
+    "service_rate": 95.00
+  },
+  {
+    "service_name": "Occupational Therapy",
+    "service_education_level": ["elementary", "high school", "postsecondary"],
+    "service_rate": 90.00
+  }
+]
