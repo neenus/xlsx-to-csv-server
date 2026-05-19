@@ -1,24 +1,21 @@
 const axios = require('axios');
 const asyncHandler = require('../middlewares/asyncHandler');
 
-// @desc    Login user
+// @desc    Login user — proxies to nr-auth service
 // @route   POST /api/v1/auth/login
 // @access  Public
 exports.login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  const authServiceUrl = process.env.NODE_ENV === 'production'
-    ? process.env.AUTH_SERVICE_URL
-    : process.env.AUTH_SERVICE_URL_DEV;
-
-  const response = await axios.post(`${authServiceUrl}/login`, { email, password });
-
-  res
-    .status(200)
-    .cookie('token', response.data.data.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-    })
-    .json(response.data.data);
+  try {
+    const response = await axios.post(
+      `${process.env.AUTH_SERVICE_URL}/api/v1/auth/login`,
+      req.body
+    );
+    res.status(200).json(response.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    const error = err.response?.data?.error || 'Login failed';
+    res.status(status).json({ success: false, error });
+  }
 });
 
 // @desc    Logout user
