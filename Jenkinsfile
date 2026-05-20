@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
+        NPM_TOKEN = credentials('npm-private-token')
         IMAGE_VERSION = '1.0'
     }
     stages {
@@ -16,8 +17,8 @@ pipeline {
         stage('Build docker images') {
             steps {
                 sh 'echo "Building docker image..."'
-                sh "docker build -t neenus007/xlsx-csv:${IMAGE_VERSION}.${BUILD_NUMBER} ."
-                sh 'docker build -t neenus007/xlsx-csv:latest .'
+                sh "docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t neenus007/xlsx-csv:${IMAGE_VERSION}.${BUILD_NUMBER} ."
+                sh "docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t neenus007/xlsx-csv:latest ."
             }
         }
         stage('Login to DockerHub') {

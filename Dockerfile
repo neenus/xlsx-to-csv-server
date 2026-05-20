@@ -1,13 +1,14 @@
 FROM --platform=linux/amd64 node:slim
 
+ARG NPM_TOKEN
+
 # Set node environment to production
 ENV NODE_ENV=production
 
-ADD --chown=node:node . /server
 WORKDIR /server
 
-COPY package*.json ./
-RUN npm ci omit=development && npm cache clean --force
+COPY package*.json .npmrc ./
+RUN npm ci --omit=development && npm cache clean --force && rm -f .npmrc
 RUN npm install pm2 -g
 
 EXPOSE 1337
