@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { requireAuth } = require('../middlewares/auth.middleware');
 
 const {
   getServices,
@@ -10,12 +11,12 @@ const {
 } = require('../controllers/services.controller');
 
 router.route('/')
-  .get(getServices)
-  .post(addService);
+  .get(requireAuth, getServices)
+  .post(requireAuth, addService);
 
 router.route('/:id')
-  .get(getService)
-  .put(updateService)
-  .delete(deleteService);
+  .get(requireAuth, getService)
+  .put(requireAuth, updateService)
+  .delete(requireAuth, deleteService);
 
 module.exports = router;

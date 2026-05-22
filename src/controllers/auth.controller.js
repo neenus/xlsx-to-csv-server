@@ -8,7 +8,8 @@ exports.login = asyncHandler(async (req, res) => {
   try {
     const response = await axios.post(
       `${process.env.AUTH_SERVICE_URL}/api/v1/auth/login`,
-      req.body
+      req.body,
+      { headers: { 'x-app-name': process.env.APP_NAME } }
     );
     res.status(200).json(response.data);
   } catch (err) {
