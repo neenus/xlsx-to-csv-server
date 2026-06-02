@@ -1,6 +1,6 @@
 const fs = require("fs").promises;
 const xlsx = require("node-xlsx");
-const { json2csvAsync } = require("json-2-csv");
+const { json2csvAsync: json2csv } = require("json-2-csv");
 const path = require("path");
 
 const parseXlsx = (fileName, inputDir) => xlsx.parse(`${inputDir}/${fileName}`);
@@ -16,7 +16,7 @@ const createCsvFile = async (fileName, inputDir, outputDir) => {
 
 const writeDataToCsv = async (fileName, data, outputDir) => {
   if (!data.length) return;
-  const csvContent = await json2csvAsync(data);
+  const csvContent = await json2csv(data);
   await fs.writeFile(`${outputDir}/${fileName}`, csvContent);
 };
 

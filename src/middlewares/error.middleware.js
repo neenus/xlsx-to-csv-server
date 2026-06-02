@@ -7,6 +7,8 @@ class AppError extends Error {
 }
 
 const errorHandler = (err, req, res, next) => {
+  if (!err.isOperational) console.error("[error]", err);
+
   let statusCode = err.statusCode || 500;
   let message = err.isOperational ? err.message : "Server Error";
 
