@@ -62,7 +62,7 @@ exports.logout = asyncHandler(async (req, res) => {
     axios.post(
       `${authServiceUrl()}/api/v1/auth/logout`,
       {},
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}`, 'x-app-name': appName() } }
     ).catch(() => {});
   }
 
