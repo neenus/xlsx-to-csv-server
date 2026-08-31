@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    tools {
+        nodejs '22.14.0'
+    }
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-token')
         NPM_TOKEN = credentials('npm-private-token')
